@@ -1,0 +1,37 @@
+These quotes are displayed after some time centered on the screen with a border of one line.
+Attention: Leading and trailing spaces are trimmed from the lines and they are centered!
+
+BEGIN Quote
+Wake up Neo...
+END Quote
+
+BEGIN Quote
+Follow the white rabbit!
+END Quote
+
+BEGIN Quote
+Möge die Macht mit Dir sein!
+END Quote
+
+BEGIN Quote
++++ Kein Käse mehr Fehler +++
+END Quote
+
+BEGIN Quote
+Leg Herrn Zwiebel Rein
+END Quote
+
+BEGIN Quote
+Sport ist Mord,
+nur Sprit hält fit!
+END Quote
+
+BEGIN Quote
+Viel zu lernen Du noch hast,
+junger Padawan.
+END Quote
+
+BEGIN Quote
+Nobody can be told what the Matrix is,
+you have to see it yourself.
+END Quote

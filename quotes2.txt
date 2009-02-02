@@ -1,0 +1,67 @@
+These quotes are displayed at random position without a border.
+Attention: Spaces are made transparent!
+
+BEGIN Quote
+Wake up Neo...
+END Quote
+
+BEGIN Quote
+Randy wuz here!
+END Quote
+
+BEGIN Quote
+            (__)
+            (oo)
+      /------\/
+     / |    ||
+    *  /\---/\
+       ~~   ~~
+Have you mooed today?
+END Quote
+
+BEGIN Quote
+HELGE
+END Quote
+
+BEGIN Quote
+<°))><
+END Quote
+
+BEGIN Quote
+<°)))><
+END Quote
+
+BEGIN Quote
+Don't worry, be happy!
+END Quote
+
+BEGIN Quote
+ -----
+/ o o \
+|  V  |
+ \,,,/
+END Quote
+
+BEGIN Quote
++---    +
+|       |
++--  +--+
+|    |  |
++--- +--+
+END Quote
+
+BEGIN Quote
+((((((         ((      ((
+((             (( ((
+((((    (( ((  (((     ((
+((      (((    (( ((   ((
+((((((  ((     ((  ((  ((
+END Quote
+
+BEGIN Quote
+(((()   ((((()  ((((()  (((()   (((()   ()  ()
+()  ()    ()    ()      ()  ()  ()  ()   ()()
+(((()     ()    ((()    (((()   (((()     ()
+()        ()    ()      (()     (()       ()
+()        ()    ((((()  () ()   () ()     ()
+END Quote

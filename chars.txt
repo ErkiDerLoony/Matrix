@@ -1,0 +1,2379 @@
+% Einen normalen Artikel schreiben mit Schriftgröße 12 und auf DIN-A4 Papier
+% Falls die abgesetzten Gleichungen linksbündig sein sollen, zusätzlich die
+% Option »fleqn« verwenden
+\documentclass[a4paper,12pt]{article}
+
+% Eingabe- und Ausgabekodierung richtig setzen
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Deutsche Sprache aktivieren
+\usepackage[ngerman]{babel}
+\usepackage[fixlanguage]{babelbib}
+\selectbiblanguage{ngerman}
+
+% Die AMS-Pakete laden
+\usepackage{amsmath,amssymb,amsthm}
+
+% Die nächste Zeile bewirkt serifenlose Schrift (im Text- und Mathe-Modus)
+% Allerdings sind keine Kapitälchen möglich
+\usepackage{cmbright}
+
+% Optischen Randausgleich aktivieren
+\usepackage[activate]{pdfcprot}
+
+% Seitenränder auf vernünftige Werte setzen
+\usepackage{geometry}
+\geometry{a4paper,top=20mm,bottom=20mm,left=20mm,right=20mm}
+
+% Das Euro-Zeichen benutzbar machen
+% Mittels \EUR{10,30} wird dann die Ausgabe 10,30 € erzeugt
+\usepackage{eurosym}
+
+% Dieses Paket wird zum Einbinden von Grafiken mittels
+% \includegraphics[scale=0.3]{Bild.png} benötigt
+\usepackage[pdftex]{graphicx}
+
+% Spezielle Pakete für Tabellen laden
+% · tabularx kann Tabellen mit Zeilenumbruch und variabler Spaltenbreite
+%   mittels \begin{tabularx}{\textwidth}{XX} ... \end{tabularx} erzeugen
+%   und benötigt die Pakete array und rotating
+% · booktabs ist für \toprule, \midrule und \bottomrule notwendig
+\usepackage{tabularx,array,rotating,booktabs}
+
+% Spezielle Optionen für enumerate, itemize und description
+\usepackage{enumitem}
+
+% Kein Rand über verschachtelten Listen auf der 2. Ebene (auf der 3. Ebene ist
+% sowieso schon kein Rand)
+\setlist[2]{topsep=0pt}
+
+% Kleinerer Abstand zwischen Listen-Items
+\setlist{itemsep=0pt}
+
+% Die Items einer description Umgebung sollten besser kursiv statt fett
+% gesetzt werden
+\setdescription{font=\itshape}
+
+% Ist nötig für farbigen Text via \textcolor{red}{...}
+% Für Zeichnungen mit pgf wird xxcolor benötigt (nicht color oder xcolor)
+% Farbige Zeichnungen gehen dann mit
+%   \begin{pgfpicture}
+%     \color{red}
+%     \pgfxyline(0,0)(1,1)
+%   \end{pgfpicture}
+% Halbtransparente Farben gehen so
+%   \begin{pgfpicture}
+%     \begin{colormixin}{25!white}
+%       \color{blue}
+%       \pgfrect[fill]{\pgfxy(0,0)}{\pgfxy(1,1)}
+%     \end{colormixin}
+%   \end{pgfpicture}
+% Dabei werden zum Füllen des Rechtecks 25% Blau und der Rest Weiß verwendet
+\usepackage{xxcolor}
+\definecolor{lightgray}{gray}{0.93}
+\definecolor{middlegray}{gray}{0.85}
+\definecolor{darkblue}{rgb}{0,0,0.75}
+
+% Zum Erstellen von Zeichnungen
+%   \begin{pgfpicture}{0cm}{0cm}{10cm}{5cm}
+%     \pgfxyline(0,0)(1,1)
+%     \pgfputat{\pgfxy(1,1)}{\pgfbox[left,top]{Hallo Welt!}}
+%   \end{pgfpicture}
+% Dabei ist der (0cm, 0cm) der Ursprung der Zeichnung, die 10cm breit und
+% 5cm hoch ist
+\usepackage{pgf}
+\usepackage{subfigure}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+
+% Für Code-Listings und so
+%   \begin{lstlisting}[language=java,caption={...}]
+%     ...
+%   \end{lstlisting}
+\usepackage{listings}
+\lstset{numbers=left,frame=single,framerule=1pt}
+\lstset{xleftmargin=30pt,xrightmargin=30pt}
+\lstset{backgroundcolor=\color{lightgray}}
+\lstset{showspaces=false,showstringspaces=false}
+\lstset{emphstyle=\textbf,sensitive=true}
+\lstset{basicstyle=\ttfamily,breaklines=true,tabsize=4}
+
+%% Eigene Kopf- und Fußzeilen definieren
+%% Dabei steht OR, OC, OL für oben rechts, zentriert und links auf ungeraden
+%% Seiten und ER, EC, EL für dasselbe auf geraden Seiten
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
+% \fancyhead{}
+% \fancyfoot{}
+% \fancyhead[OR,ER]{Edgar Kalkowski (48475)}
+% \renewcommand{\headrulewidth}{0pt}
+% \renewcommand{\footrulewidth}{0pt}
+
+% Mathe-Symbole mit Doppelstrichen für spezielle Mengen
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\T}{\mathrm{T}}
+
+% Vektoren werden fett gesetzt mittels $\V v \in \R^3$
+\newcommand{\V}{\mathbf}
+
+% Nicht kursive Mathe-Symbole
+\newcommand{\Mat}{\mathrm{Mat}}
+\newcommand{\End}{\mathrm{End}}
+\newcommand{\Kern}{\mathrm{Kern}}
+\newcommand{\Bild}{\mathrm{Bild}}
+\newcommand{\Spur}{\mathrm{Spur}}
+\newcommand{\Eig}{\mathrm{Eig}}
+\newcommand{\id}{\mathrm{id}}
+\renewcommand{\mod}{\mathrm{\;mod\;}}
+
+%% Falls gewünscht, kann die Nummerierung für enumerate angepasst werden
+% \renewcommand{\labelenumi}{\alph{enumi})}
+% \renewcommand{\labelenumii}{\arabic{enumii}.}
+% \renewcommand{\labelenumiii}{\roman{enumiii}.}
+% \renewcommand{\labelenumiv}{\Alph{enumiv}.}
+
+% Ein besseres qed-Symbol
+\renewcommand{\qedsymbol}{$\mathfrak{q.e.d.}$}
+
+% Umgebungen für Behauptungen und Annahmen ähnlich denen aus amsthm
+\newenvironment{Behauptung}{
+  \par\vspace{.75em}\textbf{Behauptung.}\hskip\labelsep
+}{\par}
+\newenvironment{Annahme}{
+  \par\vspace{.75em}\textbf{Annahme.}\hskip\labelsep
+}{\par\vspace{.75em}}
+
+% Text wird zusätzlich zum kursiven Satz farblich hervorgehoben
+\renewcommand{\emph}[1]{\textcolor{darkblue}{\textit{#1}}}
+
+\begin{document}
+
+\title{\vspace{-2em}Rechnernetze II -- Klausurvorbereitung}
+\author{Edgar Kalkowski\\{\tt eMail@edgar-kalkowski.de}}
+\date{}
+
+\maketitle
+
+\tableofcontents
+
+\section{Die Sicherungsschicht und LANs}
+
+\begin{itemize}
+\item Hosts und Router sind \emph{Knoten} (englisch »nodes«)
+\item Die Kommunikationsverbindungen zwischen Knoten sind \emph{Links}, welche
+  kabelgebunden und auch schnurlos sein können
+\item Die Aufgabe der Sicherungsschicht ist die Übertragung von \emph{Frames}
+  von einem Knoten zum anderen, dabei kann zwischen je zwei Knoten ein anderes
+  Protokoll zum Einsatz kommen
+\item Jedes Protokoll der Sicherungsschicht kann verschiedene Dienste anbieten,
+  als da wären
+  \begin{itemize}
+  \item Aufteilung der Datagramme der höheren Schicht (Vermittlungsschicht)
+    in Frames mit eigenem Header und eigener Adressierung
+    (\emph{MAC-Adressen})
+  \item Verlässlicher Datentransfer zwischen jeweils zwei benachbarten
+    Knoten (selten nötig bei kabelgebundener Übertragung, da hier wenig
+    Übertragungsfehler passieren, wichtiger bei kabellosen Verbindungen,
+    um eine komplette Ende-zu-Ende-Neuübertragung zu vermeiden)
+  \item Flusskontrolle, um die Überlastung der Knoten zu verhindern
+  \item Erkennung von Übertragungsfehlern und entweder Benachrichten des
+    Senders und Neuübertragung des Frames oder Verwerfen des Frames
+  \item Beheben von Übertragungsfehlern durch automatische Erkennung und
+    Korrektur von Bitfehlern mittels Übertragung einer Prüfsumme
+  \item Halbduplex-/Vollduplex-Betrieb, wobei beim Halbduplex-Betrieb nur
+    jeweils einer der beiden Knoten senden und der andere empfangen darf
+  \end{itemize}
+\item Sender und Empfänger kommunizieren über \emph{Adapter}
+\end{itemize}
+
+\subsection{Fehlererkennung}
+
+\begin{figure}[bp]
+  \centering
+  \subfigure[Kein Paritätsfehler]{
+    \begin{minipage}{10em}\tt\centering
+      1 0 1 0 1 | 1 \par
+      1 1 1 1 0 | 0 \par
+      0 1 1 1 0 | 1 \par
+      --------------------+---- \par
+      0 0 1 0 1 | 0\vspace{.5em}
+    \end{minipage}
+  }
+  \subfigure[Ein Paritätsfehler]{
+    \begin{minipage}{10em}\tt\centering
+      1 \textcolor{red}{0} 1 0 1 | 1 \par
+      \textcolor{red}{1\;\raisebox{.2ex}
+        {\textcircled{\raisebox{-.2ex}{0}}}\;1 1 0} | \textcolor{red}{0} \par
+      0 \textcolor{red}{1} 1 1 0 | 1 \par
+      --------------------+---- \par
+      0 \textcolor{red}{0} 1 0 1 | 0\vspace{.5em}
+    \end{minipage}
+  }
+  \caption{Fehlererkennung mittels Paritätsbits}
+  \label{fig:paritätsbit}
+\end{figure}
+
+\begin{itemize}
+\item Zusätzlich zu den eigentlichen Nutzdaten der Nachricht werden zusätzliche
+  Bits übertragen, anhand derer man auf die Richtigkeit einer Nachricht
+  schließen kann
+\item Erster Ansatz: Paritätsbit (siehe \hyperref[fig:paritätsbit]
+  {Abbildung~\ref*{fig:paritätsbit}})
+  \begin{itemize}
+  \item Jede Nachricht wird in $k$ Bit lange Blöcke aufgeteilt und diese
+    in eine Art Matrix untereinander geschrieben
+  \item Nun wird eine zusätzliche Zeile und eine zusätzliche Spalte eingefügt
+    und deren Bits so gesetzt, dass die Anzahl an Einsen in jeder Zeile und
+    jeder Spalte gerade ist
+  \item Aus der zusätzlichen Zeile und Spalte wird eine Paritätsbit berechnet,
+    sodass die Anzahl der Einsen in der zusätzlichen Zeile bzw. Spalte und
+    dem Paritätsbit gerade ist
+  \item Die zusätzliche Zeile und die zusätzliche Spalte zusammen mit dem
+    aus diesen berechnetem Partitätsbit wird mit der Nachricht übertragen
+  \item Auf diese Art und Weise kann ein einzelner Bitfehler sicher erkannt
+    und korrigiert werden
+  \end{itemize}
+\item Internet Checksum
+  \begin{itemize}
+  \item Wird lediglich in der Transportschicht eingesetzt, um die Integrität
+    einer Nachricht zu prüfen
+  \item Die Nutzdaten werden als 16-bit Integers behandelt und aufaddiert
+  \item Das Einerkomplement des Ergebnisses wird als Prüfsumme übertragen
+  \item Der Empfänger berechnet auf gleiche Weise eine Prüfsumme und testet
+    die selbstberechnete und die empfangene auf Gleichheit
+  \item Falls die beiden Prüfsummen nicht übereinstimmen, ist bei der
+    Übertragung ein Fehler aufgetreten
+  \item Es ist möglich, dass hier trotz einer korrekten Prüfsumme ein Fehler
+    aufgetreten ist, der jedoch nicht entdeckt werden kann
+  \end{itemize}
+\item CRC (»cyclic redundancy check«)
+  \begin{itemize}
+  \item CRC ist in der Praxis weit verbreitet und für verschiedene Bit-Anzahlen
+    standardisiert: CRC-8, -12, -16 und -32
+  \item Für eine binär kodierte Nachricht $D$ finde bei gegebenem (fest
+    vereinbartem) Generator $G$ ein $r$ Bit langes $R$, sodass
+    $D \cdot 2^r \textnormal{ XOR } R = nG$
+  \item In der Praxis berechnet sich $R$ als der Rest der Division von
+    $D \cdot 2^r$ durch $G$ (siehe \hyperref[fig:crc]{Abbildung~\ref*{fig:crc}}
+    für ein Beispiel)
+  \end{itemize}
+\end{itemize}
+
+\begin{figure}[btp]
+  \centering
+  \begin{minipage}{18em}
+    \tt
+    $D \cdot \textcolor{red}{2^r} \rightarrow$ 101110\textcolor{red}{000} :
+    1001 = 101011\par
+    \hspace{4.1em}\underline{1001\hspace{0.5em}}\hspace{4.3em}$\uparrow$\par
+    \hspace{4.1em}\hspace{1em}101\hspace{4.25em}$G$\par
+    \hspace{4.1em}\hspace{1em}\underline{\hspace{1em}0\hspace{0.5em}}\par
+    \hspace{4.1em}\hspace{1em}1010\par
+    \hspace{4.1em}\hspace{1em}\underline{1001\hspace{0.5em}}\par
+    \hspace{4.1em}\hspace{2em}11\textcolor{red}{0}\par
+    \hspace{4.1em}\hspace{2em}\underline{\hspace{1em}0\hspace{0.5em}}\par
+    \hspace{4.1em}\hspace{2em}110\textcolor{red}{0}\par
+    \hspace{4.1em}\hspace{2em}\underline{1001\hspace{0.5em}}\par
+    \hspace{4.1em}\hspace{2.5em}101\textcolor{red}{0}\par
+    \hspace{4.1em}\hspace{2.5em}\underline{1001}\par
+    \hspace{4.1em}\hspace{3em}011 $\leftarrow R$
+  \end{minipage}
+  \caption{Berechnung eines CRC Codes}
+  \label{fig:crc}
+\end{figure}
+
+\subsection{Multiple Access Protokolle}\label{multipleaccess}
+
+\begin{itemize}
+\item Es gibt zwei Arten von Netzen auf Ebene der Sicherungsschicht
+  \begin{enumerate}
+  \item Ein \emph{Point-to-Point}-Netz verbindet genau einen Sender mit einem
+    Empfänger; Probleme das Übertragungsmedium aufzuteilen gibt es hier nicht
+  \item Ein \emph{Broadcast}-Netz verbindet mehrere Hosts, von denen mehrere
+    Sender und Empfänger oder auch beides gleichzeitig sein können; Problem
+    hierbei ist, das Übertragunsmedium möglichst gerecht und gleichmäßig auf
+    die verschiedenen Hosts aufzuteilen
+  \end{enumerate}
+\item Ein \emph{Multiple Access Protokoll} ist ein verteilter Algorithmus,
+  der sicherstellt, dass in einem Broadcast-Netz keine Kollisionen auftreten,
+  d.h. dass nicht zwei Knoten gleichzeitig senden und durch die dadurch
+  entstehenden Interferenzen keine der Übertragungen erfoglreich empfangen
+  werden kann
+\item Ein Problem hierbei ist, dass die Koordinaten der Übertragungen durch
+  das Multiple Access Protokoll ebenfalls über den einen gemeinsamen
+  Übertragungskanal erfolgen muss, da kein zweiter Kanal zur Verfügung steht
+\item Ein ideales Multiple Access Protokoll sollte daher folgende Eigenschaften
+  haben
+  \begin{itemize}
+  \item Falls zu einem Zeitpunkt nur ein Knoten senden möchte und der Kanal
+    eine Übertragungsrate von $R$ Bps aufweist, sollte dieser Knoten auch
+    mit $R$ Bps übertragen können
+  \item Falls zu einem Zeitpunkt $M$ Knoten etwas über einen Kanal mit der
+    Übertragungsrate $R$ Bps senden möchten, sollte jeder Knoten dies mit
+    $R/M$ Bps tun können
+  \item Das Protokoll sollte vollständig dezentralisiert sein, d.h. es soll
+    kein spezieller Knoten existieren, welcher die Koordination der
+    Kommunikation übernimmt, und welcher bei Ausfall das ganze System lahmlegen
+    kann
+  \item Es sollte keine Synchronisation der Uhren der beteiligten Knoten
+    nötig sein
+  \item Das Protokoll sollte möglichst einfach sein
+  \end{itemize}
+\item Es folgt ein Überblick über die verschiedenen verbreiteten Paradigmen;
+  ein kleiner Vergleich dieser Paradigmen findet sich in
+  \hyperref[tab:mavergleich]{Tabelle~\ref*{tab:mavergleich}} am Ende des
+  Abschnitts
+\end{itemize}
+
+\begin{figure}[bp]
+  \begin{minipage}{0.5\textwidth}
+    \centering
+    \begin{pgfpicture}
+      \pgfsetlinewidth{1pt}
+      \pgfputat{\pgfxy(3,2)}{\pgfbox[center,center]{\small Übertragungskanal}}
+      \pgfputat{\pgfxy(1.5,1.5)}{\pgfbox[center,center]{\small Runde 1}}
+      \pgfputat{\pgfxy(4.5,1.5)}{\pgfbox[center,center]{\small Runde 2}}
+      \pgfmoveto{\pgfxy(0,1.25)}
+      \pgflineto{\pgfxy(0,2)}
+      \pgflineto{\pgfxy(1.5,2)}
+      \pgfmoveto{\pgfxy(4.5,2)}
+      \pgflineto{\pgfxy(6,2)}
+      \pgflineto{\pgfxy(6,1.25)}
+      \pgfmoveto{\pgfxy(0.05,1.25)}
+      \pgflineto{\pgfxy(0.05,1.5)}
+      \pgflineto{\pgfxy(0.8,1.5)}
+      \pgfmoveto{\pgfxy(2.2,1.5)}
+      \pgflineto{\pgfxy(2.95,1.5)}
+      \pgflineto{\pgfxy(2.95,1.25)}
+      \pgfmoveto{\pgfxy(3.05,1.25)}
+      \pgflineto{\pgfxy(3.05,1.5)}
+      \pgflineto{\pgfxy(3.8,1.5)}
+      \pgfmoveto{\pgfxy(5.2,1.5)}
+      \pgflineto{\pgfxy(5.95,1.5)}
+      \pgflineto{\pgfxy(5.95,1.25)}
+      \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(1,1)}
+      \pgfrect[stroke]{\pgfxy(1,0)}{\pgfxy(1,1)}
+      \pgfrect[stroke]{\pgfxy(2,0)}{\pgfxy(1,1)}
+      \pgfputat{\pgfxy(0.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 1}}
+      \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 2}}
+      \pgfputat{\pgfxy(2.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 3}}
+      \pgfrect[stroke]{\pgfxy(3,0)}{\pgfxy(1,1)}
+      \pgfrect[stroke]{\pgfxy(4,0)}{\pgfxy(1,1)}
+      \pgfrect[stroke]{\pgfxy(5,0)}{\pgfxy(1,1)}
+      \pgfputat{\pgfxy(3.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 1}}
+      \pgfputat{\pgfxy(4.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 2}}
+      \pgfputat{\pgfxy(5.5,0.5)}{\pgfbox[center,center]{\tiny Nutzer 3}}
+      \pgfputat{\pgfxy(6.5,0.5)}{\pgfbox[center,center]{\dots}}
+      \pgfsetlinewidth{2pt}
+      \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(3,1)}
+      \pgfrect[stroke]{\pgfxy(3,0)}{\pgfxy(3,1)}
+    \end{pgfpicture}
+    \caption{TDMA}
+    \label{fig:tdma}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \centering
+    \begin{pgfpicture}
+      \pgfsetlinewidth{1pt}
+      \pgfputat{\pgfxy(3,2)}{\pgfbox[center,center]{\small Übertragungskanal}}
+      \pgfputat{\pgfxy(6.5,0.5)}{\pgfbox[center,center]{\dots}}
+      \pgfmoveto{\pgfxy(0,1.25)}
+      \pgflineto{\pgfxy(0,2)}
+      \pgflineto{\pgfxy(1.5,2)}
+      \pgfmoveto{\pgfxy(4.5,2)}
+      \pgflineto{\pgfxy(6,2)}
+      \pgflineto{\pgfxy(6,1.25)}
+      \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(6,0.25)}
+      \pgfrect[stroke]{\pgfxy(0,0.25)}{\pgfxy(6,0.25)}
+      \pgfrect[stroke]{\pgfxy(0,0.5)}{\pgfxy(6,0.25)}
+      \pgfrect[stroke]{\pgfxy(0,0.75)}{\pgfxy(6,0.25)}
+      \pgfputat{\pgfxy(3,0.125)}{\pgfbox[center,center]
+        {\tiny Nutzer 1 $\simeq$ Frequenzband 1}}
+      \pgfputat{\pgfxy(3,0.375)}{\pgfbox[center,center]
+        {\tiny Nutzer 2 $\simeq$ Frequenzband 2}}
+      \pgfputat{\pgfxy(3,0.625)}{\pgfbox[center,center]
+        {\tiny Nutzer 3 $\simeq$ Frequenzband 3}}
+      \pgfputat{\pgfxy(3,0.875)}{\pgfbox[center,center]
+        {\tiny Nutzer 4 $\simeq$ Frequenzband 4}}
+    \end{pgfpicture}
+    \caption{FDMA}
+    \label{fig:fdma}
+  \end{minipage}
+\end{figure}
+
+\subsubsection{Aufteilen des Übertragungskanals (»channel partitioning«)}
+
+\begin{itemize}
+\item Der Kanal wird anhand von Frequenz, Zeit oder Kodierung aufgeteilt und
+  die einzelnen Teile jeweils einem Knoten für den exklusiven Gebrauch
+  zugeteilt
+\item Nachteil ist, dass ungenutzte Teile der einzelnen Knoten »verloren« sind
+\item Beispiele hierfür sind
+  \begin{itemize}
+  \item TDMA (»time division multiple access«): Der Kanal wird in
+    Übertragungsrunden eingeteilt und in jeder Übertragungsrunde darf jeder
+    Knoten für eine gewisse Zeit senden (siehe \hyperref[fig:tdma]
+    {Abbildung~\ref*{fig:tdma}})
+  \item FDMA (»frequency division multiple access«): Die Frequenzbandbreite
+    des Übertragungskanals wird auf die Knoten aufgeteilt und jeder Knoten
+    darf nur die ihm zugeteilte Frequenz zum Übertragen nutzen (siehe
+    \hyperref[fig:fdma]{Abbildung~\ref*{fig:fdma}})
+  \item Eine weitere denkbare Möglichkeit ist, jedem Knoten eine bestimmte
+    von allen anderen verschiedene Kodierung zuzuweisen und jeder Knoten
+    darf nur die Codewörter nutzen, die ihm zugeteilt wurden
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Zufälliger Zugriff (»random access«)}
+
+Jeder Knoten darf jederzeit mit der vollen Übertragungsrate des
+Kanals senden und falls so Kollisionen auftreten, werden diese erkannt
+und behandelt (z.B. durch eine verzögerte Neuübertragung)
+
+\paragraph{Slotted ALOHA}
+(siehe \hyperref[fig:aloha]{Abbildung~\ref*{fig:aloha}})
+
+\begin{figure}[bp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfsetendarrow{\pgfarrowtriangle{4pt}}
+    \pgfxyline(0,0)(9.5,0)
+    \pgfclearendarrow
+    \pgfxyline(0,-0.25)(0,0.25)
+    \pgfxyline(1,-0.25)(1,0.25)
+    \pgfxyline(2,-0.25)(2,0.25)
+    \pgfxyline(3,-0.25)(3,0.25)
+    \pgfxyline(4,-0.25)(4,0.25)
+    \pgfxyline(5,-0.25)(5,0.25)
+    \pgfxyline(6,-0.25)(6,0.25)
+    \pgfxyline(7,-0.25)(7,0.25)
+    \pgfxyline(8,-0.25)(8,0.25)
+    \pgfxyline(9,-0.25)(9,0.25)
+    \pgfputat{\pgfxy(0.5,-0.3)}{\pgfbox[center,center]{K}}
+    \pgfputat{\pgfxy(1.5,-0.3)}{\pgfbox[center,center]{L}}
+    \pgfputat{\pgfxy(2.5,-0.3)}{\pgfbox[center,center]{K}}
+    \pgfputat{\pgfxy(3.5,-0.3)}{\pgfbox[center,center]{E}}
+    \pgfputat{\pgfxy(4.5,-0.3)}{\pgfbox[center,center]{L}}
+    \pgfputat{\pgfxy(5.5,-0.3)}{\pgfbox[center,center]{K}}
+    \pgfputat{\pgfxy(6.5,-0.3)}{\pgfbox[center,center]{L}}
+    \pgfputat{\pgfxy(7.5,-0.3)}{\pgfbox[center,center]{E}}
+    \pgfputat{\pgfxy(8.5,-0.3)}{\pgfbox[center,center]{E}}
+    \begin{colormixin}{25!white}
+      \color{blue}
+      \pgfrect[fill]{\pgfxy(0,0.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(5,0.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(8,0.5)}{\pgfxy(1,0.5)}
+      \color{green}
+      \pgfrect[fill]{\pgfxy(0,1.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(2,1.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(3,1.5)}{\pgfxy(1,0.5)}
+      \color{yellow}
+      \pgfrect[fill]{\pgfxy(0,2.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(2,2.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(5,2.5)}{\pgfxy(1,0.5)}
+      \pgfrect[fill]{\pgfxy(7,2.5)}{\pgfxy(1,0.5)}
+    \end{colormixin}
+    \pgfrect[stroke]{\pgfxy(0,0.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(5,0.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(8,0.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(0,1.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(2,1.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(3,1.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(0,2.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(2,2.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(5,2.5)}{\pgfxy(1,0.5)}
+    \pgfrect[stroke]{\pgfxy(7,2.5)}{\pgfxy(1,0.5)}
+    \pgfputat{\pgfxy(-0.2,0.75)}{\pgfbox[right,center]{Knoten 3}}
+    \pgfputat{\pgfxy(-0.2,1.75)}{\pgfbox[right,center]{Knoten 2}}
+    \pgfputat{\pgfxy(-0.2,2.75)}{\pgfbox[right,center]{Knoten 1}}
+    \pgfputat{\pgfxy(-0.2,0.05)}{\pgfbox[right,center]{Zeitslots}}
+    \pgfrect[stroke]{\pgfxy(8.5,2)}{\pgfxy(1.8,1)}
+    \pgfputat{\pgfxy(8.6,2.9)}{\pgfbox[left,top]{\tiny K}}
+    \pgfputat{\pgfxy(8.8,2.9)}{\pgfbox[left,top]{\tiny $\simeq$}}
+    \pgfputat{\pgfxy(9.1,2.9)}{\pgfbox[left,top]{\tiny Kollision}}
+    \pgfputat{\pgfxy(8.6,2.7)}{\pgfbox[left,top]{\tiny L}}
+    \pgfputat{\pgfxy(8.8,2.7)}{\pgfbox[left,top]{\tiny $\simeq$}}
+    \pgfputat{\pgfxy(9.1,2.7)}{\pgfbox[left,top]{\tiny Leer}}
+    \pgfputat{\pgfxy(8.6,2.5)}{\pgfbox[left,top]{\tiny E}}
+    \pgfputat{\pgfxy(8.8,2.5)}{\pgfbox[left,top]{\tiny $\simeq$}}
+    \pgfputat{\pgfxy(9.1,2.5)}{\pgfbox[left,top]{\tiny Erfolgreich}}
+    \pgfputat{\pgfxy(9.1,2.3)}{\pgfbox[left,top]{\tiny gesendet}}
+  \end{pgfpicture}
+  \caption{Slotted ALOHA}
+  \label{fig:aloha}
+\end{figure}
+
+\begin{itemize}
+\item Aufteilen der Übertragungsbandbreite in Zeitslots
+\item Knoten beginnen mit der Übertragung jeweils nur am Beginn eines
+  Zeitslots
+\item Falls mehrere Knoten in einem Zeitslot etwas übertragen, erkennen
+  alle Knoten eine Kollision und übertragen ihr Frame mit einer
+  Wahrscheinlichkeit von $p$ im nächsten Zeitslot erneut
+\item Falls keine Kollision aufgetreten ist, wird der nächste Frame im
+  nächsten Zeitslot gesendet
+\item Vorteile
+  \begin{itemize}
+  \item Einfach
+  \item Abgesehen von der Aufteilung in Zeitslots ist keine Synchronisation
+    nötig
+  \item Falls nur ein Knoten aktiv ist, kann dieser mit der vollen Bandbreite
+    des Übertragungskanals senden
+  \end{itemize}
+\item Nachteile
+  \begin{itemize}
+  \item Um die Zeitslots zu synchronisieren, müssen die Uhren der beteiligten
+    Knoten synchronisiert werden
+  \item Durch die Kollisionen und eventuelle leere Zeitslots wird
+    Übertragungszeit verschwendet
+  \item Knoten könnten Kollisionen in geringerer Zeit als einem Zeitslot
+    erkennen
+  \end{itemize}
+\item Betrachtet man die Effizienz des Slottet ALOHA, so stellt sich heraus
+  dass diese mit einer Erfolgsrate von ca. $37\,\%$ ziemlich gering ist
+  \begin{itemize}
+  \item Angenommen $N$ Knoten senden in jedem Zeitslot mit einer
+    Wahrscheinlichkeit von $p$
+  \item Dann ist die Wahrscheinlichkeit, dass ein bestimmter Knoten
+    erfolgreich sendet $p(1-p)^{N-1}$, und die Wahrscheinlichkeit, dass
+    überhaupt irgendein Knoten erfolgreich sendet $Np(1-p)^{N-1}$
+  \item Um maximale Effizienz zu erreichen, wählt man ein geeignetes $p'$,
+    sodass $Np'(1-p')^{N-1}$ maximal wird
+  \item Geht man nun für viele Knoten in den Grenzwert $N \to \infty$ über,
+    so ergibt sich eine Effizienz von $1/e \approx 0.37$
+  \end{itemize}
+\end{itemize}
+
+\paragraph{ALOHA}
+\begin{itemize}
+\item Verwendet im Gegensatz zu Slotted ALOHA keine Zeitslots, also ist
+  überhaupt keine Synchronisation nötig
+\item Sobald ein Frame an einem Adapter ankommt, wird dieser gesendet
+\item Die Kollisions-Wahrscheinlichkeit ist höher, da ein Frame sowohl mit
+  einem bereits vorher gesendeten Frame kollidieren kann, als auch mit einem,
+  der erst später gesendet wird
+\item Falls für die Übertragung eines Frames die Zeit $t$ benötigt wird, darf
+  also für eine erfolgreiche Übertragung im Zeitraum $[t_0 - t, t_0 + t]$ kein
+  anderer Frame übertragen werden
+\item Daher ergibt sich eine noch geringere Effizienz als bei Slotted ALOHA
+  mit einer Erfolgswahrscheinlichkeit von ca. $18\,\%$
+  \begin{itemize}
+  \item Die Wahrscheinlichkeit, dass ein bestimmter Knoten erfolgreich sendet
+    ist hier $P$(Knoten sendet erfolgreich) $\cdot$ $P$(Kein anderer Knoten
+    hat im Zeitraum $[t_0 - t, t_0]$ gesendet) $\cdot$ $P$(Kein anderer Knoten
+    hat im Zeitraum $[t_0, t_0 + t]$ gesenet) = $p\cdot (1-p)^{N-1} \cdot 
+    (1-p)^{N-1} = p(1-p)^{2(N-1)}$
+  \item Wählt man wiederum ein optimales $p'$ und bildet den Grenzwert für
+    $N \to \infty$, so folgt eine Effizienz von $1/(2e) \approx 0.18$
+  \end{itemize}
+\end{itemize}
+
+\paragraph{CSMA (»carrier sense multiple access«)}
+\begin{itemize}
+\item Anstatt beim Eintreffen eines Frames direkt mit der Übertragung zu
+  beginnen, »horcht« der Adapter zunächst, ob der Übertragungskanal gerade frei
+  ist, und verzögert die Übertragung, falls das nicht der Fall ist
+\item Trotz dieser Vorsichtsmaßnahme können aufgrund der Übertragungsverzögerung
+  Kollisionen auftreten
+\item Diese werden erkannt und gemäß eines noch zu spezifizierenden Protokolls
+  später erneut übertragen
+\item Beim »normalen« CSMA wird selbst bei festgestellter Kollision noch der
+  Rest des aktuellen Frames gesendet, was Zeitverschwendung ist, daher
+  implementiert CSMA-CD (»carrier sense multiple access with collision
+  detection«) eine Verbesserung derart, dass die Übertragung bereits abgebrochen
+  wird, sobald eine Kollision festgestellt wurde
+\end{itemize}
+
+\subsubsection{Abwechseln (»taking turns«)}
+
+\begin{enumerate}
+\item Polling eines Master-Knotens
+  \begin{itemize}
+  \item Ein Master-Knoten gibt jeweils einem Knoten die Erlaubnis zu senden,
+    wodurch Kollisionen vermieden werden
+  \item Großer Nachteil ist, dass das gesamte System zusammenbricht, falls
+    der Master-Knoten ausfällt (nicht dezentralisiert), sowie der viele
+    Overhead durch das Polling
+  \end{itemize}
+\item Herumreichen eines Tokens
+  \begin{itemize}
+  \item Ein Token wird immer im Kreis herumgereicht und nur der Knoten, der
+    aktuell das Token besitzt, darf senden
+  \item Großer Nachteil ist auch hier, dass das gesamte System zusammenbricht,
+    sollte der Token verlorengehen, sowie der viele Overhead, der durch das
+    Herumschicken des Tokens verursacht wird
+  \end{itemize}
+\end{enumerate}
+
+\begin{table}[tbp]
+  \centering
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    Paradigma & Bewertung \\
+    \midrule
+    Aufteilen des Kanals & Ist gerecht und effizient bei hoher
+    Netzauslastung, jedoch ineffizient bei geringer Last, da hier viel
+    Bandbreite verschwendet wird \\
+    Zufälliger Zugriff & Ist sehr effizient bei geringer Netzauslastung, da
+    in diesem Fall hier ein Knoten mit der vollen Bandbreite des Netzes
+    senden kann, jedoch ineffizient bei hoher Netzauslastung, da hier dann
+    ein hoher Overhead durch viele Kollisionen entsteht \\
+    Abwechseln & Versuch, das beste von beiden zu vereinen \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Vergleich der verschiedenen Multiple Access Protokolle}
+  \label{tab:mavergleich}
+\end{table}
+
+\subsection{Adressierung}
+
+\begin{itemize}
+\item Zur Adressierung auf Ebene der Sicherungsschicht wird die 48 Bit lange
+  \emph{MAC-Adresse} verwendet, welche weltweit eindeutig ist (damit
+  Netzwerkadapter sich von einem LAN in ein anderes bewegen kann) und fest
+  ins ROM des Netzwerkadapters eingebrannt ist
+\item Jeder Adapter verwaltet eine \emph{ARP-Tabelle}, welche die MAC-Adressen
+  aller Adapter im gleichen Netz speichert, bis sie nach typischerweise etwa
+  20 Minuten als veraltet angesehen werden
+\item Falls eine Adresse nicht in der ARP-Tabelle enthalten ist, kann diese
+  durch eine Broadcast-Nachricht an die Adresse FF-FF-FF-FF-FF-FF
+  herausgefunden werden
+\item Soll eine Nachricht an einen Adressat in einem anderen Netz geschickt
+  werden, wird ein Router benötigt, welcher für jedes Subnetz eine eigene
+  ARP-Tabelle führt
+\end{itemize}
+
+\subsection{Ethernet}
+
+\begin{itemize}
+\item Ist die am weitesten verbreitete LAN Technologie, da sie sehr
+  kostengünstig ist und einfacher als beispielsweise ATM-Netze
+\item Früher (Mitte der 90er Jahre) wurden Ethernets häufig mit
+  \emph{Bus-Topologie} realisiert, heute ist hingegen die \emph{sternförmige
+    Topologie} mit einem zentralen Hub oder Switch verbreiteter
+\item Aufbau eines Ethernet-Frames (vgl.
+  \hyperref[fig:ethernetframe]{Abbildung~\ref*{fig:ethernetframe}})
+  \begin{description}
+  \item[Präambel] Die Präambel eines Frames ist immer gleich und besteht aus
+    7 Byte mit dem Muster 10101010 gefolgt von einem Byte mit dem Muster
+    01010101, was zur Synchronisierung der Uhren von Sender und Empfänger dient
+  \item[Zieladresse] Die 6 Byte lange MAC-Adresse des Empfängers
+  \item[Quelladresse] Die 6 Byte lange MAC-Adresse des Absenders
+  \item[Typ] Diese 2 Byte geben an, zu welchem Protokoll die transportierten
+    Nutzdaten gehören (z.B. IP), damit der Empfänger richtig demultiplexen kann
+  \item[Nutzdaten] Hier stehen die eigentlichen Nutzdaten der nächsthöheren
+    Schicht des OSI-Modells (z.B. ein IP-Datagramm), jedoch höchstens bis
+    zu 1500 Bytes (anderenfalls muss beispielsweise das IP-Datagramm in
+    mehreren Frames übertragen werden)
+  \item[CRC] Diese 4 Bytes enthalten den 32-Bit-CRC berechnet aus den Adressen,
+    dem Typfeld und den Nutzdaten (also ohne Präambel), welcher mit dem
+    höchstwertigen Bit zuerst an den Frame angehängt wird (zur Vermeidung
+    des \emph{Nullproblems} werden bei der Berechnung des CRC die ersten
+    32 Bit der Ziel-MAC-Adresse invertiert und das Ergebnis ebenfalls
+    invertiert)
+  \end{description}
+
+\begin{figure}[tp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfmoveto{\pgfxy(0,0)}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[center,center]{Präambel}}
+    \pgfputat{\pgfxy(1.5,1.2)}{\pgfbox[center,center]{\tiny 8 Byte}}
+    \pgfrect[stroke]{\pgfxy(3,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(4.5,0.5)}{\pgfbox[center,center]{Zieladresse}}
+    \pgfputat{\pgfxy(4.5,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfrect[stroke]{\pgfxy(6,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(7.5,0.5)}{\pgfbox[center,center]{Quelladresse}}
+    \pgfputat{\pgfxy(7.5,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfrect[stroke]{\pgfxy(9,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(9.5,0.5)}{\pgfbox[center,center]{Typ}}
+    \pgfputat{\pgfxy(9.5,1.2)}{\pgfbox[center,center]{\tiny 2 Byte}}
+    \pgfrect[stroke]{\pgfxy(10,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(12,0.5)}{\pgfbox[center,center]
+      {$\cdots$ Nutzdaten $\cdots$}}
+    \pgfputat{\pgfxy(12,1.2)}{\pgfbox[center,center]{\tiny 0-1500 Byte}}
+    \pgfrect[stroke]{\pgfxy(14,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(15,0.5)}{\pgfbox[center,center]{CRC}}
+    \pgfputat{\pgfxy(15,1.2)}{\pgfbox[center,center]{\tiny 4 Byte}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(0,1.2)(1.1,1.2)
+    \pgfxyline(1.9,1.2)(3,1.2)
+    \pgfxyline(3,1.1)(3,1.3)
+    \pgfxyline(3,1.2)(4.1,1.2)
+    \pgfxyline(4.9,1.2)(7.1,1.2)
+    \pgfxyline(6,1.1)(6,1.3)
+    \pgfxyline(7.9,1.2)(9,1.2)
+    \pgfxyline(9,1.1)(9,1.3)
+    \pgfxyline(10,1.1)(10,1.3)
+    \pgfxyline(10,1.2)(11.35,1.2)
+    \pgfxyline(12.65,1.2)(14.6,1.2)
+    \pgfxyline(14,1.1)(14,1.3)
+    \pgfxyline(15.4,1.2)(16,1.2)
+    \pgfxyline(16,1.1)(16,1.3)
+  \end{pgfpicture}
+  \caption{Aufbau eines Ethernet-Frames}
+  \label{fig:ethernetframe}
+\end{figure}
+
+\item Ein Ethernet-Adapter filtert die ankommenden Frames und leitet nur die
+  für ihn bestimmten Frames mit der richtigen Ziel-MAC-Adresse und Broadcasts
+  an das im Typfeld spezifizierte Protokoll weiter; fehlerhafte Frames werden
+  verworfen
+\item Ethernet ist \emph{verbindungslos} und bietet \emph{keinen} verlässlichen
+  Datentransfer, d.h. falls Frames aufgrund von Übertragungsfehlern
+  verworfen werden, entstehen für die darüberliegende Protokollschicht
+  »Lücken« im Datenfluss, die z.B. bei Verwendung von UDP auch nicht wieder
+  geschlossen werden
+\item Ethernet verwendet das CSMA/CD-Protokoll mit der Regelung, dass ein
+  Adapter bei der $m$-ten Kollision ein zufälliges $K$ aus der Menge
+  $\{0, 1, 2, \dots, 2^m - 1\}$ wählt und den Frame erst nach $K \cdot 512 t$
+  erneut überträgt, wobei $t$ die Zeit ist, welche zum Übertragen von einem
+  Bit benötigt wird
+\item Wenn $d_{\textnormal{prop}}$ die Übertragungsverzögerung ist und
+  $d_{\textnormal{trans}}$ die Zeit, die es dauert einen Frame maximaler
+  Größe zu übertragen, dann wird die Effizienz $E$ eines Ethernet approximiert
+  durch
+  \begin{align*}
+    E \approx \frac{1}{1 + 5d_{\textnormal{prop}}/d_{\textnormal{trans}}}
+  \end{align*}
+  Die Effizienz wird also maximal, wenn entweder die Übertragungsverzögerung
+  gegen Null geht, oder die Zeit, die es dauert einen Frame maximaler Größe
+  zu übertragen, gegen Eins geht, was auch logisch ist, da in diesen Fällen
+  entweder bei einer Kollision direkt und ohne Verzögerung abgebrochen wird
+  oder ein einzelner Adapter die ganze Zeit den Übertragungskanal belegt,
+  welcher also in beiden Fällen immer mit sinnvollen Übertragungen ausgelastet
+  ist
+\item 10BaseT bzw. 100BaseT bezeichnet ein Ethernet mit einer maximalen
+  Übertragungsrate von 10 bzw. 100 Mbps, wobei das »T« hier im Bezug zu den
+  zwei verflochtenen Kupferleitungen im Kabel für »twisted pair« steht
+\item Ethernet nutzt zum tatsächlichen Übertragen der Daten die
+  \emph{Manchester-Codierung}, bei der mit jedem Bit ein Spannungswechsel
+  assoziiert wird, was wiederum die Synchronisation der Uhren von Sender und
+  Empfänger ermöglicht
+\end{itemize}
+
+\subsubsection{Hubs}
+
+\begin{itemize}
+\item Die Hosts in einem sternförmig angelegten Ethernet können durch ein
+  zentrales \emph{Hub} verbunden werden
+\item Das Hub ist dabei vollständig »dumm« und leitet ein an einem Anschluss
+  ankommendes Signal lediglich an alle anderen Anschlüsse weiter
+\item Es werden keine Frames zwischengespeichert oder in irgendeiner
+  sonstigen Form verarbeitet und es wird auch keine Kollisionserkennung
+  betrieben (das tun hier nur die sendenden Adapter)
+\item Durch den Einsatz von Hubs kann die maximal mögliche Distanz zwischen zwei
+  Knoten erhöht werden, jedoch sind Hubs aufgrund der fehlenden
+  Kollisionserkennung nicht dazu geeignet große Netze aufzubauen
+\item Es können außerdem nur Netze gleicher Geschwindigkeit verbunden werden
+  (also z.B. nicht ein 10BaseT-Netz mit einem 100BaseT-Netz)
+\end{itemize}
+
+\subsubsection{Switches}
+
+\begin{itemize}
+\item Statt eines Hubs kann zum Verbinden von mehreren Hosts in einem Ethernet
+  auch ein \emph{Switch} eingesetzt werden
+\item Im Gegensatz zum Hub speichert und verarbeitet ein Switch aber die
+  durchgehenden Frames und betreibt Kollisionserkennung mittels CSMA/CD
+\item Durch die eingesetzten Puffer zur Zwischenspeicherung ist es möglich,
+  auch Netze unterschiedlicher Geschwindigkeiten miteinander zu verbinden
+  (z.B. 10BaseT und 100BaseT)
+\item Ein Switch leitet Pakete anhand ihrer Ziel-MAC-Adresse möglichst direkt
+  an den richtigen Anschluss weiter, wozu es sich im Laufe der Zeit automatisch
+  eine \emph{Switching-Tabelle} aufbaut, welche Assoziationen von MAC-Adressen
+  zu bestimmten Anschlüssen eine Zeit lang speichert (typischerweise etwa 60
+  Minuten)
+\item Falls in der Switching-Tabelle zu einem Frame kein geeigneter Eintrag
+  vorhanden ist, wird der Frame über alle Anschlüsse weitergeleitet
+  (Broadcast)
+\item Falls alle Knoten direkt an das Switch angeschlossen sind, entstehen
+  überhaupt keine Kollisionen
+\item Eine leichte Verbesserung in Hinsicht auf die Latenzzeiten erreicht man,
+  indem das Switch nicht wartet, bis ein Frame komplett empfangen wurde,
+  um ihn dann weiterzuleiten, sondern bereits während des Empfangs mit dem
+  Senden beginnt (»cut-through switching«)
+\end{itemize}
+
+\begin{table}[tbp]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+    & Router & Switch & Hub \\
+    \midrule
+    Isolation der Kollisionsbereiche & Ja & Ja & Nein \\
+    Plug\&Play & Nein & Ja & Ja \\
+    Optimales Routen & Ja & Nein & Nein \\
+    »cut-through« & Nein & Ja & Ja \\
+    \bottomrule
+  \end{tabular}
+  \caption{Vergleich Router/Switch/Hub}
+  \label{tab:rsh}
+\end{table}
+
+\subsection{PPP}
+
+\begin{itemize}
+\item Das PPP (»point to point protocol«) ist mit dem Ziel entwickelt worden
+  zwei Knoten miteinander zu verbinden (genau einen Sender mit einem
+  Empfänger), weswegen viele Probleme von Broadcastnetzen, wie z.B.
+  Kollisionen, gar nicht erst auftreten
+\item Anforderungen an das PPP
+  \begin{itemize}
+  \item Verpacken der Datagramme der Netzwerkschicht in Frames mit erkennbarem
+    Anfang und Ende und trotzdem Zulassen jedes möglichen Bit-Patterns im
+    Nutzdatenteil der Frames
+  \item Unterstützung verschiedener Netzwerkschicht-Protokolle, weshalb zum
+    Demultiplexen ein Typfeld benötigt wird
+  \item Übertragungsfehler sollen erkannt werden
+  \item Es soll möglich sein zu erkennen, falls der Übertragungskanal
+    ausfällt, und dies der Netzwerkschicht mitzuteilen
+  \item Anbieten eines Verfahrens zum gegenseitigen Austausch der Adresse
+    der Netzwerkschicht (i.d.R. IP-Adresse)
+  \end{itemize}
+\item Abgrenzungen des PPP
+  \begin{itemize}
+  \item Übertragungsfehler sollen zwar erkannt werden, jedoch sollen sie
+    nicht korrigiert werden
+  \item Flusskontrolle soll nicht Aufgabe des PPP, sondern der Netzwerkschicht
+    sein, d.h. die Netzwerkschicht darf Pakete nur so schnell an das PPP
+    weiterreichen, wie das Gegenüber sie auch verarbeiten kann
+  \item Es soll bei der Übertragung der Frames nicht auf die Reihenfolge
+    geachtet werden, d.h. die verpackten Datagramme der Netzwerkschicht
+    kommen beim Gegenüber ggf. nicht in der Reihenfolge an, wie sie gesendet
+    wurden
+  \item Es sollen nur Verbindungen zwischen genau zwei (und nicht mehr) Knoten
+    unterstützt werden
+  \end{itemize}
+
+\begin{figure}[bp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(1,0.5)}{\pgfbox[center,center]{Flag}}
+    \pgfputat{\pgfxy(1,1.2)}{\pgfbox[center,center]{\tiny 1 Byte}}
+    \pgfrect[stroke]{\pgfxy(2,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(3,0.5)}{\pgfbox[center,center]{Adresse}}
+    \pgfputat{\pgfxy(3,1.2)}{\pgfbox[center,center]{\tiny 1 Byte}}
+    \pgfrect[stroke]{\pgfxy(4,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(5,0.5)}{\pgfbox[center,center]{Steuerung}}
+    \pgfputat{\pgfxy(5,1.2)}{\pgfbox[center,center]{\tiny 1 Byte}}
+    \pgfrect[stroke]{\pgfxy(6,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(7,0.5)}{\pgfbox[center,center]{Protokoll}}
+    \pgfputat{\pgfxy(7,1.2)}{\pgfbox[center,center]{\tiny 1 oder 2 Byte}}
+    \pgfrect[stroke]{\pgfxy(8,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(10,0.5)}{\pgfbox[center,center]
+      {$\cdots$ Nutzdaten $\cdots$}}
+    \pgfputat{\pgfxy(10,1.2)}{\pgfbox[center,center]{\tiny variabel}}
+    \pgfrect[stroke]{\pgfxy(12,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(13.5,0.5)}{\pgfbox[center,center]{CRC}}
+    \pgfputat{\pgfxy(13.5,1.2)}{\pgfbox[center,center]{\tiny 2 oder 4 Byte}}
+    \pgfrect[stroke]{\pgfxy(15,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(16,0.5)}{\pgfbox[center,center]{Flag}}
+    \pgfputat{\pgfxy(16,1.2)}{\pgfbox[center,center]{\tiny 1 Byte}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(2,1.1)(2,1.3)
+    \pgfxyline(4,1.1)(4,1.3)
+    \pgfxyline(6,1.1)(6,1.3)
+    \pgfxyline(8,1.1)(8,1.3)
+    \pgfxyline(12,1.1)(12,1.3)
+    \pgfxyline(15,1.1)(15,1.3)
+    \pgfxyline(17,1.1)(17,1.3)
+    \pgfxyline(0,1.2)(0.6,1.2)
+    \pgfxyline(1.4,1.2)(2.6,1.2)
+    \pgfxyline(3.4,1.2)(4.6,1.2)
+    \pgfxyline(5.4,1.2)(6.25,1.2)
+    \pgfxyline(7.75,1.2)(9.5,1.2)
+    \pgfxyline(10.45,1.2)(12.75,1.2)
+    \pgfxyline(14.25,1.2)(15.6,1.2)
+    \pgfxyline(16.4,1.2)(17,1.2)
+  \end{pgfpicture}
+  \caption{Aufbau eines PPP-Frames}
+  \label{fig:aufbauppp}
+\end{figure}
+
+\item Aufbau eines PPP-Frames (vgl. \hyperref[fig:aufbauppp]
+  {Abbildung~\ref*{fig:aufbauppp}})
+  \begin{description}
+  \item[Flag] Dieses Byte hat immer den Wert 01111110 und kennzeichnet den
+    Beginn eines neuen Frames
+  \item[Adresse] Dieses Byte hat keine Bedeutung und daher standardmäßig den
+    Wert 11111111; laut ursprünglicher Definition des PPP sollte die Funktion
+    dieses Bytes ggf. später definiert werden
+  \item[Steuerung] Dieses Byte hat ebenfalls keine Bedeutung und den
+    Standard-Wert 00000011; die ursprüngliche Definition des PPP sah hier
+    ebenfalls vor, dass dieser Wert bei Bedarf später definiert werden sollte
+  \item[Protokoll] Diese ein oder zwei Byte identifizieren das Protokoll,
+    welches der Empfänger zum Interpretieren der Nutzdaten heranziehen soll
+    (häufig IP)
+  \item[Nutzdaten] An dieser Stelle stehen die eigentlichen Nutzdaten, also
+    z.B. ein Datagramm der Netzwerkschicht (oder ein Teil davon)
+  \item[CRC] Der CRC-Code aller bisherigen Felder abgesehen vom Anfangsflag
+    zum empfängerseitigen Erkennen von Übertragungsfehlern
+  \item[Flag] Dieses Byte entspricht genau dem allerersten Byte des Frames
+    und stellt die abschließende Begrenzung des Frames dar
+  \end{description}
+\item Da Bytes des Musters 01111110 zum Begrenzen eines Frames genutzt werden,
+  ist es problematisch, wenn genau dieses Bitmuster auch in den Nutzdaten
+  vorkommt, was jedoch laut Voraussetungen möglich sein soll
+\item Um dieses Problem zu lösen, definiert das PPP das Muster 01111101 als
+  \emph{Escape-Byte}, welches einem Byte mit dem Muster des Flag-Bytes
+  in den Nutzdaten vorangestellt und vom Empfänger wieder entfernt wird
+\item Falls nun wiederum in den Nutzdaten das Escape-Byte auftritt, wird dieses
+  verdoppelt, um anzuzeigen, dass es sich an dieser Stelle in Wirklichkeit
+  nicht um das Escape-Byte handelt
+\item Zum Auf- und Abbau einer PPP-Verbindung existiert ein spezielles
+  LCP (»link control protocol«), welches Dinge wie Austausch der Adressen
+  und Authentisierung der Knoten regelt
+\end{itemize}
+
+\subsection{Virtualisierung (ATM/MPLS)}
+
+\begin{itemize}
+\item Ursprünglich gab es nicht »das« Internet, sondern viele verschiedene
+  Netze, die jeweils ein eigenes Netz-Paradigma implementierten
+\item Um diese Netze zu verbinden, werden \emph{Gateways} genutzt, welche
+  zwischen den verschiedenen Protokollen übersetzen
+\item So kann es sein, dass die logische Verbindung zwischen zwei Knoten
+  gar nicht aus einer einzigen Verbindung besteht, sondern aus kompletten
+  Netzen, mit möglicherweise völlig verschiedenen Architekturen
+\end{itemize}
+
+\paragraph{ATM (»asynchronous transfer mode«)}
+
+\begin{figure}[tp]
+  \centering
+  \begin{pgfpicture}
+    \pgfmoveto{\pgfxy(0,0)}
+    \pgfsetlinewidth{1pt}
+    \pgfputat{\pgfxy(1,4.5)}{\pgfbox[center,center]{Anwendung}}
+    \pgfputat{\pgfxy(1,4.1)}{\pgfbox[center,center]{oder z.B. IP}}
+    \pgfputat{\pgfxy(1,0)}{\pgfbox[center,center]{Sender}}
+    \pgfrect[stroke]{\pgfxy(0,0.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(1,1)}{\pgfbox[center,center]{PHY}}
+    \pgfrect[stroke]{\pgfxy(0,1.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(1,2)}{\pgfbox[center,center]{ATM}}
+    \pgfrect[stroke]{\pgfxy(0,2.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(1,3)}{\pgfbox[center,center]{AAL}}
+    \pgfputat{\pgfxy(4,0)}{\pgfbox[center,center]{ATM Switch}}
+    \pgfrect[stroke]{\pgfxy(3,0.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(4,1)}{\pgfbox[center,center]{PHY}}
+    \pgfrect[stroke]{\pgfxy(3,1.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(4,2)}{\pgfbox[center,center]{ATM}}
+    \pgfputat{\pgfxy(7,0)}{\pgfbox[center,center]{ATM Switch}}
+    \pgfrect[stroke]{\pgfxy(6,0.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(7,1)}{\pgfbox[center,center]{PHY}}
+    \pgfrect[stroke]{\pgfxy(6,1.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(7,2)}{\pgfbox[center,center]{ATM}}
+    \pgfputat{\pgfxy(10,0)}{\pgfbox[center,center]{Empfänger}}
+    \pgfrect[stroke]{\pgfxy(9,0.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(10,1)}{\pgfbox[center,center]{PHY}}
+    \pgfrect[stroke]{\pgfxy(9,1.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(10,2)}{\pgfbox[center,center]{ATM}}
+    \pgfrect[stroke]{\pgfxy(9,2.5)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(10,3)}{\pgfbox[center,center]{AAL}}
+    \pgfputat{\pgfxy(10,4.5)}{\pgfbox[center,center]{Anwendung}}
+    \pgfputat{\pgfxy(10,4.1)}{\pgfbox[center,center]{oder z.B. IP}}
+    \color{darkblue}
+    \pgfxyline(1.5,3)(1.8,3)
+    \pgfxyline(1.8,3)(1.8,1)
+    \pgfxyline(1.8,1)(3.2,1)
+    \pgfxyline(3.2,1)(3.2,2)
+    \pgfsetendarrow{\pgfarrowlargepointed{3pt}}
+    \pgfxyline(3.2,2)(3.5,2)
+    \pgfsetendarrow{}
+    \pgfxyline(4.5,2)(4.8,2)
+    \pgfxyline(4.8,2)(4.8,1)
+    \pgfxyline(4.8,1)(6.2,1)
+    \pgfxyline(6.2,1)(6.2,2)
+    \pgfsetendarrow{\pgfarrowlargepointed{3pt}}
+    \pgfxyline(6.2,2)(6.5,2)
+    \pgfsetendarrow{}
+    \pgfxyline(7.5,2)(7.8,2)
+    \pgfxyline(7.8,2)(7.8,1)
+    \pgfxyline(7.8,1)(9.2,1)
+    \pgfxyline(9.2,1)(9.2,3)
+    \pgfsetendarrow{\pgfarrowlargepointed{3pt}}
+    \pgfxyline(9.2,3)(9.5,3)
+    \pgfxyline(1,3.8)(1,3.3)
+    \pgfxyline(10,3.3)(10,3.8)
+  \end{pgfpicture}
+  \caption{Architektur eines ATM-Netzes}
+  \label{fig:atm}
+\end{figure}
+
+\begin{itemize}
+\item ATM-Netze wurden in den 90ern konzipiert
+  mit dem Ziel, nicht nur Daten, sondern auch Sprache und Videos über ein
+  Netz verschicken zu können
+\item Dies ist zwar mit IP auch möglich, jedoch kommt es aufgrund der bei IP
+  fehlenden QoS (»quality of service«) Garantien oftmals zu Störungen oder
+  Verzögerungen
+\item ATM wurde als paketvermittelndes Netz mit virtuellen Verbindungen
+  entwickelt, dessen Pakete eine feste Länge haben und \emph{Zellen} genannt
+  werden
+  \item Architektur eines ATM-Netzes (vgl. \hyperref[fig:atm]
+    {Abbildung~\ref*{fig:atm}})
+  \begin{description}
+  \item[AAL (»ATM adaption layer«)] Diese Schicht nimmt die Pakete von einem
+    Anwendungsprotokoll oder einem anderen zu kapselnden Protokoll (z.B. IP)
+    entgegen und verpackt diese beim Sender in eine AAL PDU (»protcol
+    data unit«) bzw. entpackt diese PDUs beim Empfänger wieder und reicht
+    die Daten an die nächsthöhrere Schicht weiter; AALs sind für verschiedene
+    Dienste implementiert worden
+    \begin{description}
+    \item[AAL1] Für Dienste mit konstanter Bitrate, wie z.B. die Emulation
+      einer Verbindung
+    \item[AAL2] Für Dienste mit variabler Bitrate, wie z.B. die Übertragung
+      eines MPEG Videos
+    \item[AAL5] Für die Übertragung von Daten, z.B. IP-Datagrammen
+    \end{description}
+    Im AAL werden die generierten PDUs in mehrere ATM-Zellen segmentiert
+    und diese schließlich verschickt
+  \item[ATM] Ähnlich zur Netzwerkschicht des TCP/IP-Stacks kümmert sich
+    die ATM-Schicht um das Routing der ATM-Zellen
+  \item[PHY] Die physikalische Schicht, welche sich um die tatsächliche
+    Kodierung der Bits kümmert (analog zur physikalischen Schicht des
+    TCP/IP-Stacks)
+  \end{description}
+
+\item Die Vision bei der Entwicklung der ATM-Technologie war, eine einzige
+  Neztwerk-Architektur zu entwerfen, die sowohl Daten, als auch Sprache,
+  Video und E-Mail von einem Endsystem zum anderen transportieren sollte
+\item In der Realität wird ATM vor allem dazu eingesetzt, Router des
+  IP-Backbone miteinander zu verbinden
+\item ATM bietet im Vergleich zu einem IP-Netz, das auf dem
+  »best-effort«-Dienstmodell aufsetzt, viele verschiedene Dienste mit
+  verschiedensten Qualitäts-Garantien an (z.B. Bandbreite, Verlustraten,
+  Reihenfolge, zeitliche Vorgaben, Überlastkontrolle)
+\item Aufbau einer AAL5 PDU (vgl. \hyperref[fig:pdu]{Abbildung~\ref*{fig:pdu}})
+  \begin{description}
+  \item[Nutzdaten] Am Beginn einer PDU stehen 0 bis maximal 65535 Byte an
+    Nutzdaten aus höheren Protokollschichten, die zu übertragen sind
+  \item[PAD] Das PAD-Feld wird benötigt, um die Nachricht zu einem
+    ganzzahligen Vielfachen von 48 aufzufüllen, da eine ATM-Zelle immer
+    die Feste Länge von 48 Byte hat
+  \item[Länge] Diese 2 Byte geben die Länge der Nutzdaten an, damit der
+    Empfänger die PAD-Bytes wieder entfernen kann
+  \item[CRC] Der bereits bekannte 32-Bit-CRC (4 Byte)
+  \end{description}
+
+\begin{figure}[tp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(8,1)}
+    \pgfputat{\pgfxy(4,0.5)}{\pgfbox[center,center]{Nutzdaten}}
+    \pgfputat{\pgfxy(4,1.2)}{\pgfbox[center,center]{\tiny 0-65535 Byte}}
+    \pgfrect[stroke]{\pgfxy(8,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(9.5,0.5)}{\pgfbox[center,center]{PAD}}
+    \pgfputat{\pgfxy(9.5,1.2)}{\pgfbox[center,center]{\tiny 0-47 Byte}}
+    \pgfrect[stroke]{\pgfxy(11,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(11.5,0.5)}{\pgfbox[center,center]{Len}}
+    \pgfputat{\pgfxy(11.5,1.2)}{\pgfbox[center,center]{\tiny 2 Byte}}
+    \pgfrect[stroke]{\pgfxy(12,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(13,0.5)}{\pgfbox[center,center]{CRC}}
+    \pgfputat{\pgfxy(13,1.2)}{\pgfbox[center,center]{\tiny 4 Byte}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(0,1.2)(3.2,1.2)
+    \pgfxyline(4.8,1.2)(8.9,1.2)
+    \pgfxyline(8,1.1)(8,1.3)
+    \pgfxyline(10.1,1.2)(11,1.2)
+    \pgfxyline(11,1.1)(11,1.3)
+    \pgfxyline(12,1.1)(12,1.3)
+    \pgfxyline(12,1.2)(12.55,1.2)
+    \pgfxyline(13.45,1.2)(14,1.2)
+    \pgfxyline(14,1.1)(14,1.3)
+  \end{pgfpicture}
+  \caption{Aufbau einer AAL5 PDU}
+  \label{fig:pdu}
+\end{figure}
+
+\begin{figure}[bp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(3,1)}
+    \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[center,center]{VCI}}
+    \pgfputat{\pgfxy(1.5,1.2)}{\pgfbox[center,center]{\tiny 3.5 Byte}}
+    \pgfrect[stroke]{\pgfxy(3,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(3.5,0.5)}{\pgfbox[center,center]{PT}}
+    \pgfputat{\pgfxy(3.5,1.2)}{\pgfbox[center,center]{\tiny 3 Bit}}
+    \pgfrect[stroke]{\pgfxy(4,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(4.5,0.5)}{\pgfbox[center,center]{CLP}}
+    \pgfputat{\pgfxy(4.5,1.2)}{\pgfbox[center,center]{\tiny 1 Bit}}
+    \pgfrect[stroke]{\pgfxy(5,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(6,0.5)}{\pgfbox[center,center]{CRC}}
+    \pgfputat{\pgfxy(6,1.2)}{\pgfbox[center,center]{\tiny 1 Byte}}
+    \pgfrect[stroke]{\pgfxy(7,0)}{\pgfxy(6,1)}
+    \pgfputat{\pgfxy(10,0.5)}{\pgfbox[center,center]{Nutzdaten}}
+    \pgfputat{\pgfxy(10,1.2)}{\pgfbox[center,center]{\tiny 48 Byte}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(0,1.2)(0.95,1.2)
+    \pgfxyline(2.05,1.2)(3,1.2)
+    \pgfxyline(3,1.1)(3,1.3)
+    \pgfxyline(3,1.2)(3.15,1.2)
+    \pgfxyline(3.85,1.2)(4,1.2)
+    \pgfxyline(4,1.1)(4,1.3)
+    \pgfxyline(4,1.2)(4.15,1.2)
+    \pgfxyline(4.85,1.2)(5,1.2)
+    \pgfxyline(5,1.1)(5,1.3)
+    \pgfxyline(5,1.2)(5.6,1.2)
+    \pgfxyline(6.4,1.2)(7,1.2)
+    \pgfxyline(7,1.1)(7,1.3)
+    \pgfxyline(7,1.2)(9.5,1.2)
+    \pgfxyline(10.5,1.2)(13,1.2)
+    \pgfxyline(13,1.1)(13,1.3)
+  \end{pgfpicture}
+  \caption{Aufbau einer ATM-Zelle}
+  \label{fig:atmcell}
+\end{figure}
+
+\item Aufbau einer ATM-Zelle (vgl. \hyperref[fig:atmcell]
+  {Abbildung~\ref*{fig:atmcell}})
+  \begin{description}
+  \item[VCI] Dies ist der 28 Bit lange Identifier der virtuellen Verbindung,
+    zu der die ATM-Zelle gehört
+  \item[PT (»payload type«)] Dieses Flag gibt an, um welche Art von Zelle es
+    sich handelt und was für Daten also der Nutzdatenteil enthält (z.B.
+    Steuerungszelle zum Aufbau eines VC oder Datenzelle)
+  \item[CLP (»cell loss priority«)] Falls dieses Bit auf 1 gesetzt ist,
+    bedeutet das, dass die Zelle bei Überlastung des Netzes verworfen werden
+    kann
+  \item[CRC] Dieses Byte enthält den CRC des ATM-Headers
+  \item[Nutzdaten] Der Nutzdatenteil einer ATM-Zelle umfasst stets genau 48
+    Byte, was einem recht wenig erscheinen mag, jedoch so gewählt wurde, damit
+    beim Übertragen von Sprachdaten nur eine geringe Verzögerung durch die
+    Erstellung der Zellen entsteht
+  \end{description}
+\item Die physikalische Schicht eines ATM-Netzes untergliedert sich in zwei
+  Sub-Schichten
+  \begin{enumerate}
+  \item Das TCS (»transmission convergence sublayer«) hat die Aufgabe die
+    ATM-Zellen der ATM-Schicht an das PMD anzupassen, die Checksummen zu
+    berechnen und die Zellen in eine Sendereihenfolge zu bringen
+  \item Die PMD (»physical medium dependent«) Schicht kümmert sich um die
+    eigentliche Übertragung und sendet beispielsweise je nach tatsächlicher
+    Verbindung leere Zellen, falls gerade nichts sinnvolles zu übertragen ist
+  \end{enumerate}
+\end{itemize}
+
+\paragraph{Virtuelle Verbindungen}
+
+\begin{itemize}
+\item ATM-Netze arbeiten eigentlich nach dem Paradigma der Paketvermittlung und
+  sind also nicht verbindungsorientiert, unterstützen jedoch trotzdem
+  \emph{virtuelle Verbindungen} in der Form dass über spezielle Steuerpakete
+  ein Pfad entlang verschiedener Router von einem Sender zu einem Empfänger
+  markiert werden kann
+\item ATM-Netze bieten dabei zwei verschiedene Arten von virtuellen
+  Verbindungen (oder \emph{VC}s vom Englischen »virtual circuit«s) an
+  \begin{enumerate}
+  \item \emph{Permanente VCs} werden langfristig aufrechterhalten und daher
+    typischerweise für eine »permanente« Verbindung zwischen zwei
+    IP Routern verwendet, zwischen denen ein ATM-Netz den IP-Verkehr
+    weiterleitet
+  \item \emph{Wechselnde VCs} werden dynamisch nach Bedarf aufgebaut, um einige
+    Daten zwischen zwei Knoten auszutauschen und dann wieder beendet
+  \end{enumerate}
+\item Beim Versenden von Zellen über eine virtuelle Verbindung, enthalten die
+  Zellen keine Zieladresse mehr, sondern stattdessen die ID des VC, zu dem
+  sie gehören
+\item Nachteil ist, dass jedes Switch für jeden VC, auf dessen Pfad das Switch
+  liegt, einen Zustand aufrechterhalten muss, und dass durch das initiale
+  Aufbauen des VC eine Verzögerung und Overhead entsteht
+\item Ein weiterer Nachteil ist, dass zwischen je zwei Knoten eine virtuelle
+  Verbindung benötigt, was bei vielen Knoten möglicherweise zu Problemen
+  führen kann
+\item Vorteil ist, dass man so auf einfache Weise entlang der Pfade der VCs,
+  QoS-Garantien einhalten kann
+\end{itemize}
+
+\paragraph{MPLS (»multiprotocol label switching«)}
+
+\begin{itemize}
+\item Um die Übertragung von IP-Paketen zu beschleunigen, bediente man sich
+  einiger Ideen der VC-Netze und entwickelte so ein Routing-Verfahren, dass
+  nicht die IP-Adresse berücksichtigt, sondern stattdessen ein festes
+  \emph{Label}
+\item Das Label ist dabei im MPLS-Header enthalten, der zwischen
+  Ethernet-Header und IP-Header in einen Ethernet-Frame eingefügt wird
+\item Somit müssen also stets die Router an beiden Enden einer Verbindung
+  MPLS-fähig sein, damit diese Technik genutzt werden kann
+\item Vorteil dieses Verfahrens ist, dass Routing-Pfade verfolgt werden
+  können, die mit IP alleine nicht möglich wären (»traffic engineering«),
+  da die Routing-Protokolle von IP-Routern jeweils nur einen Pfad mit den
+  geringsten Kosten zwischen zwei Knoten zulassen
+\end{itemize}
+
+\section{Drahtlosnetzwerke}
+
+\begin{itemize}
+\item Elemente eines Drahtlosnetzwerks
+  \begin{itemize}
+  \item Zunächst das wichtigste Element: Der \emph{Host}, welcher sich im
+    drahtlosen Netzwerk aufhält muss nicht immer mobil sein, sondern kann
+    genauso gut ein feststehender Computer sein
+  \item Weiterhin existiert pro Drahtlosnetz i.d.R. eine Sendestation, welche
+    typischerweise mit einem kabelbasierten Netz verbunden ist und lediglich
+    zwischen Kabel und Funk »übersetzt«, jedoch sind auch \emph{Ad-Hoc-Netze}
+    ohne zentrale Sendestation möglich, in denen die Hosts die Aufgabe des
+    Routens von einem Knoten zum anderen übernehmen
+  \item Die eigentliche drahtlose Verbindung kann sehr verschieden beschaffen
+    sein (verschiedene Datenraten und Reichweiten) und benötigt in jedem Fall
+    Verfahren, die den gleichzeitigen Zugriff von mehreren Sendern regeln
+  \end{itemize}
+\item Die wesentlichen Unterschiede zu einem kabelgebundenen Netz sind
+  \begin{itemize}
+  \item Das Abnehmen der Signalstärke mit der Entfernung spielt eine große
+    Rolle bei der Reichweite von Drahtlosnetzen
+  \item Da die genutzten Frequenzen (um die 2,4 GHz) auch von anderen Geräten
+    (z.B. Mikrowellenofen, Mobilfunk) genutzt werden, können Interferenzen
+    auftreten und den Empfang stören
+  \item Funksignale werden auf ihrem Weg vom Sender zum Empfänger an
+    verschiedenen Objekten reflektiert und erreichen daher den Empfänger
+    in durcheinandergebrachter Reihenfolge und mit unterschiedlicher
+    Verzögerung
+  \item Zusätzlich zum Problem des »Multiple Access« (siehe
+    \ref{multipleaccess}) kommt das Problem des
+    \emph{versteckten Terminals}, welches auftritt, wenn zwei Knoten $A$ und
+    $C$ eines Drahtlosnetzwerks sich zwar beide in Reichweite eines dritten
+    Knotens $B$ befinden, sich jedoch gegenseitig nicht empfangen können und
+    sich somit nicht bewusst sind, dass sie unter Umständen bei $B$
+    interferieren
+  \end{itemize}
+\item Zu den bereits in \ref{multipleaccess} vorgestellten Multiple Access
+  Protokollen TDMA und FDMA kommt mit CDMA (»code division multiple access«)
+  noch ein besondern bei Drahtlosnetzwerken verbreitetes Verfahren zur
+  Aufteilung des Übertragungsmediums hinzu
+\item Dabei wird jedem Knoten ein spezieller Code zugewiesen und vor dem
+  Senden multipliziert jeder Sender sein Signal mit diesem Code
+\item Sind die Codes orthogonal, können alle so überlagerten Signale
+  durch Anwenden des inneren Produkts vollständig dekodiert werden
+\end{itemize}
+
+\subsection{IEEE 802.11}
+
+\begin{itemize}
+\item Dieser weit verbreitete Standard für Drahtlosnetze existiert in
+  verschiedenen Ausführungen (a, b, g), die sich im Wesentlichen in den
+  verwendeten Frequenzbändern und in der maximalen Datenrate unterscheiden
+\item Hier wird kein CDMA angewendet, sondern alle Hosts nutzen denselben
+  Code
+\item Stattdessen wird als Protokoll zur Vermeidung von Kollisionen CSMA/CA
+  (siehe \ref{csmaca}) eingesetzt
+\item Das verfügbare Frequenzspektrum ist in \emph{Kanäle} unterteilt, sodass
+  jede Sendestation mit einem Kanal konfiguriert werden muss
+\item Da benachbarte Sendestationen auch denselben Kanal verwenden können,
+  wird zusätzlich jeder Station ein Name (SSID) zugewiesen, welchen die
+  Hosts benutzen, um ihre Sendestation zu identifizieren
+\item Aufbau eines IEEE 802.11 Frames (vgl. \hyperref[fig:802.11]
+  {Abbildung~\ref*{fig:802.11}})
+  \begin{description}
+  \item[C] Diese 2 Byte bestehen aus einigen Kontroll-Flags, die z.B. den
+    Typ des Frames (RTS, CTS, ACK, Daten) und die Protokollversion anzeigen
+  \item[D] Diese zwei Bytes geben die Zeit an, die für die Übertragung dieses
+    Frames reserviert ist (RTS/CTS)
+  \item[Zieladresse] An dieser Stelle stehen die 6 Byte der MAC-Adresse des
+    Hosts oder Zugangspunkts, der diesen Frame empfangen soll
+  \item[Quelladresse] Hier steht die ebenfalls 6 Byte lange MAC-Adresse des
+    Absenders dieses Frames
+  \item[Routeradresse] Diese 6 Byte enthalten die MAC-Adresse des Routers,
+    über den das Drahtlosnetz mit dem Rest des Internets verbunden ist (diese
+    Adresse ist zum Beispiel wichtig, wenn ein Host eine Nachricht über den
+    Router bekommt und darauf antworten möchte)
+  \item[S] Da ein Drahtlosnetzwerk ACKs zur Bestätigung des Empfangs von
+    Frames verwendet und diese verlorengehen können, ist die in diesem Feld
+    enthaltene Sequenznummer
+    wichtig, damit ein Zugangspunkt bei Eintreffen eines Frames entscheiden
+    kann, ob dieser ein Duplikat darstellt oder nicht
+  \item[Adresse 4] Diese zusätzliche Adresse kommt in Ad-Hoc-Netzwerken zum
+    Einsatz
+  \item[Nutzdaten] Hier sind bis zu 2312 Byte an Nutzdaten enthalten
+  \item[CRC] Der bereits bekannt 32-Bit-CRC
+  \end{description}
+\end{itemize}
+
+\begin{figure}[tbp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(0.5,1.2)}{\pgfbox[center,center]{\tiny 2 Byte}}
+    \pgfputat{\pgfxy(0.5,0.5)}{\pgfbox[center,center]{C}}
+    \pgfrect[stroke]{\pgfxy(1,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(1.5,1.2)}{\pgfbox[center,center]{\tiny 2 Byte}}
+    \pgfputat{\pgfxy(1.5,0.5)}{\pgfbox[center,center]{D}}
+    \pgfrect[stroke]{\pgfxy(2,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(3,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfputat{\pgfxy(3,0.7)}{\pgfbox[center,center]{Ziel-}}
+    \pgfputat{\pgfxy(3,0.3)}{\pgfbox[center,center]{adresse}}
+    \pgfrect[stroke]{\pgfxy(4,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(5,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfputat{\pgfxy(5,0.7)}{\pgfbox[center,center]{Quell-}}
+    \pgfputat{\pgfxy(5,0.3)}{\pgfbox[center,center]{adresse}}
+    \pgfrect[stroke]{\pgfxy(6,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(7,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfputat{\pgfxy(7,0.7)}{\pgfbox[center,center]{Router-}}
+    \pgfputat{\pgfxy(7,0.3)}{\pgfbox[center,center]{adresse}}
+    \pgfrect[stroke]{\pgfxy(8,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(8.5,1.2)}{\pgfbox[center,center]{\tiny 2 Byte}}
+    \pgfputat{\pgfxy(8.5,0.5)}{\pgfbox[center,center]{S}}
+    \pgfrect[stroke]{\pgfxy(9,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(10,1.2)}{\pgfbox[center,center]{\tiny 6 Byte}}
+    \pgfputat{\pgfxy(10,0.5)}{\pgfbox[center,center]{Adresse 4}}
+    \pgfrect[stroke]{\pgfxy(11,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(13,1.2)}{\pgfbox[center,center]{\tiny 0-2312 Byte}}
+    \pgfputat{\pgfxy(13,0.5)}{\pgfbox[center,center]{Nutzdaten}}
+    \pgfrect[stroke]{\pgfxy(15,0)}{\pgfxy(1.5,1)}
+    \pgfputat{\pgfxy(15.75,1.2)}{\pgfbox[center,center]{\tiny 4 Byte}}
+    \pgfputat{\pgfxy(15.75,0.5)}{\pgfbox[center,center]{CRC}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(1,1.1)(1,1.3)
+    \pgfxyline(2,1.1)(2,1.3)
+    \pgfxyline(2,1.2)(2.6,1.2)
+    \pgfxyline(3.4,1.2)(4.6,1.2)
+    \pgfxyline(4,1.1)(4,1.3)
+    \pgfxyline(5.4,1.2)(6.6,1.2)
+    \pgfxyline(6,1.1)(6,1.3)
+    \pgfxyline(7.4,1.2)(8,1.2)
+    \pgfxyline(8,1.1)(8,1.3)
+    \pgfxyline(9,1.1)(9,1.3)
+    \pgfxyline(9,1.2)(9.6,1.2)
+    \pgfxyline(10.4,1.2)(12.3,1.2)
+    \pgfxyline(11,1.1)(11,1.3)
+    \pgfxyline(13.7,1.2)(15.35,1.2)
+    \pgfxyline(15,1.1)(15,1.3)
+    \pgfxyline(16.15,1.2)(16.5,1.2)
+    \pgfxyline(16.5,1.1)(16.5,1.3)
+  \end{pgfpicture}
+  \caption{Aufbau eines 802.11 Frames}
+  \label{fig:802.11}
+\end{figure}
+
+\subsection{CSMA/CA}\label{csmaca}
+
+\begin{itemize}
+\item Genau wie bei CSMA/CD horcht ein Sender zunächst, ob der Sendekanal
+  frei ist, bevor er mit der Übertragung beginnt
+\item Da Kollisionserkennung wie bei CSMA/CD aufgrund des
+  Versteckten-Terminal-Problems bei Drahtlosnetzen unmöglich ist, wird hier
+  stattdessen auf Kollisionsvermeidung (CA, »collision avoidance«) gesetzt
+\item Dazu wird von einem Sender, der erkennt, dass der Übertragungskanal frei
+  ist, zunächst ein kleines RTS (»request to send«) Paket gesendet
+\item Falls bei der zentralen Sendestation genau ein überscheidungsfreies
+  RTS ankommt, sendet sie an den Absender dieses RTS ein ACK, dass er mit
+  der Übertragung eines Datenframes beginnen kann
+\item Alle anderen Knoten im Drahtlosnetz erhalten dieses ACK ebenfalls und
+  dürfen in der Zeit, bis das Frame fertig übertragen ist, nicht senden
+\end{itemize}
+
+\subsection{Mobilfunknetze}
+
+\begin{itemize}
+\item Die Mobilfunknetze sind hierarchisch aufgebaut
+  \begin{itemize}
+  \item Auf unterster Ebene befinden sich die Hosts, welche sich mit ihrem
+    jeweiligen Zugangspunkt verbinden
+  \item Ein Zugangspunkt mit dem von ihm aufgespannten Empfangsbereich
+    stellte eine Zelle dar, von denen viele existieren, sodass möglicht
+    der gesamte Raum abgedeckt ist
+  \item Jeweils mehrere Zellen werden von einem MSC (»mobile switching center«)
+    verwaltet
+  \item Die MSCs sind nun wiederum mit dem kabelgebundenen Rest des Internets
+    verbunden
+  \end{itemize}
+\item \emph{2G-Netze}, z.B. GSM (»global system for mobile communications«)
+  oder in Nordamerika IS-136 dienen dem Austausch von Sprachmittelungen
+  (klassische Mobilfunknetze) und verwenden eine Kombination von TDMA und FDMA
+\item Ebenfalls zu den 2G-Netzen gehört IS-95, was zusätzlich CDMA verwendet
+\item GPRS, EDGE und CDMA-2000 (Phase 1) gehören zu den \emph{2.5G-Netzen},
+  die im
+  Pinzip ein GSM-Netz darstellen, das um die Funktionalität der
+  Datenübertragung erweitert wurde
+\item \emph{3G-Netze}, z.B. UTMS (»universal mobile telecommunications service«)
+  und CDMA-2000, sind
+  vollständig auf die Übertragung von Sprache \emph{und} Daten ausgelegt und
+  benutzen alle CDMA
+\end{itemize}
+
+\section{Mobilität}
+
+\begin{itemize}
+\item Zunächst einige Begriffsdefinitionen
+  \begin{description}
+  \item[Heimatnetz] meint hier das Netz, in dem ein mobiler Nutzer fest
+    registriert ist, wo er also »zu Hause« ist und eine permanente Adresse hat
+  \item[Permanente Adresse] ist die Adresse eines mobilen Nutzers in seinem
+    Heimatnetz, welche \emph{immer} benutzt werden kann, um den mobilen Nutzer
+    zu erreichen
+  \item[Home Agent] ist ein Gerät (normalerweise ein Router), der im Heimatnetz
+    eines mobilen Nutzers installiert ist und ggf. (falls der Nutzer sich
+    gerade nicht in seinem Heimatnetz aufhält) Nachrichten für ihn
+    entgegennimmt und ihm hinterhersendet (verpackt in ein neues Paket,
+    »Paket im Paket«)
+  \item[COA (»care of address«)] ist die Adresse eines mobilen Nutzers, die er
+    von einem fremden Netz (z.B. per DHCP) zugewiesen bekommt
+  \end{description}
+\item Um herauszufinden, ob in seinem Netz gerade mobile Nutzer unterwegs sind,
+  broadcastet jeder Home Agent regelmäßig spezielle ICMP Nachrichten, welche
+  bereits eine oder mehrere freie COAs enthalten, für welche sich mobile
+  Nutzer registrieren können
+\item Hat sich ein mobiler Nutzer registriert, teilt der Home Agent des
+  besuchten Netzes dem Home Agent des mobilen Nutzers dessen aktuellen
+  Aufenthaltsort bzw. die COA mit
+\item Zum Kontaktieren eines mobilen Nutzers, der sich gerade in einem fremden
+  Netz aufhält sind zwei Herangehensweisen denkbar
+  \begin{enumerate}
+  \item Da die Router des Internets sich über die Adressen im Internet sowieso
+    schon austauschen, wäre denkbar, dass der mobile Nutzer auf diesem Weg
+    seine COA bekannt macht, was jedoch nicht auf eine große Anzahl moblier
+    Nutzer skalierbar ist
+  \item Beim zweiten Verfahren wird das Netz verschont, dafür übernehmen die
+    Endsysteme die Aufgabe des Auffindens eines mobilen Nutzers und zwar
+    unterscheidet man zwischen \emph{indirektem Routing}, wobei alle
+    Kommunikation mit dem mobilen Nutzer über dessen Home Agent abgewickelt
+    wird, und \emph{direktem Routing}, wobei sich ein Nutzer, der den mobilen
+    Nutzer kontaktieren will, einfach dessen COA vom Home Agent besorgt und
+    danach direkt mit dem mobilen Nutzer kommuniziert
+  \end{enumerate}
+\item Vorteil des indirekten Routings ist, dass es Transparent für denjenigen
+  ist, der den mobilen Nutzer kontaktieren will, da er immer mit dem Home
+  Agent des mobilen Nutzers kommuniziert (auch falls dieser das Netz wechselt)
+\item Nachteil des indirekten Routings ist, dass es (vor allem dann) ineffizient
+  ist, wenn sich zufällig der Kontaktsuchende und der mobile Nutzer im selben
+  Netz befinden (der Kontaktsuchende wird das jedoch nicht feststellen)
+\item Vorteil des direkten Routings ist, dass hier das »Routing im Dreieck«
+  vermieden wird und die Ineffizienz, falls sich zufällig der Kontaktsuchende
+  und der mobile Nutzer im selben oder in benachbarten Netzen befinden
+\item Nachteil des direkten Routings ist, dass es nicht transparent für den
+  Kontaktsuchenden ist, das dieser zu verschiedenen Zeitpunkten auch
+  verschiedene COAs des mobilen Nutzers verwenden muss und diese jeweils vom
+  Home Agent abfragen muss
+\item Falls der mobile Nutzer bei Verwendung von direktem Routing das Netz
+  wechselt, wird \emph{Chaining} eingesetzt, d.h. der Home Agent des ersten
+  besuchten Fremdnetzes wird zum \emph{Anker} des mobilen Nutzers und sendet
+  diesem seine Nachrichten in das nächste besuchte Netz hinterher, was sich
+  rekursiv wiederholen lässt
+\item Mobile IP ist ein spezielles definiertes Verfahren, das einige der
+  vorgestellten Verfahren nutzt, z.B.
+  indirektes Routing und einen Home Agent, über den jedem mobilen Nutzer
+  Nachrichten geschickt werden können
+\item Auch GSM-Netze verwenden indirektes Routing
+\item Der Einfluss der Mobilität auf die höhreren Protokollschichten ist
+  theoretisch minimal, jedoch ergeben sich in der Praxis gewisse Probleme,
+  vor allem aufgrund der vielen Übertragungsfehler und der hohen Verlustraten,
+  die auftreten (TCP wird z.B. Verlust als Überlastung des Netzes interpretieren
+  und das »congestion window« unnötig oft verkleinern)
+\end{itemize}
+
+\subsection{Wechsel der Sendestation}
+
+\begin{itemize}
+\item Falls ein mobiler Nutzer sich in der Reichweite von zwei oder mehr
+  Sendestationen befindet, wird sein Datenverkehr vom MSC über eine
+  Sendestation geleitet
+\item Nun kann es aus verschiedensten Gründen sinnvoll sein, die Sendestation
+  zu wechseln, z.B. kann das Signal der anderen Sendestation stärker sein als
+  das der aktuellen (z.B. beim Bewegen zwischen zwei Stationen) oder die
+  eine Sendestation kann überlastet sein
+\item Der Wechsel der Sendestation (Zelle) verläuft dabei nach folgendem
+  Algorithmus
+  \begin{enumerate}
+  \item Die alte Sendestation informiert das MSC über den Wechselwunsch eines
+    mobilen Nutzers zu einer anderen Sendestation und schickt dem MSC eine
+    Liste mit einem oder mehreren neuen Sendestationen für den mobilen Nutzer
+  \item Das MSC sucht einen Pfad zur neuen Sendestation und teilt dieser mit,
+    dass sie bald einen neuen Nutzer zu bedienen hat
+  \item Die neue Sendestation reserviert für den neuen Nutzer einen Teil
+    ihrer Ressourcen (z.B. einen Zeitslot und ein Frequenzband bei Verwendung
+    von TDMA und FDMA)
+  \item Die neue Sendestation teilt der alten Sendestation über das MSC mit,
+    dass sie bereit ist
+  \item Die alte Sendestation teilt dem mobilen Nutzer mit, dass er seine
+    Verbindung abbauen und zur neuen Sendestation umschwenken soll
+  \item Der mobile Nutzer signalisiert der neuen Sendestation, dass er bereit
+    ist zu empfangen
+  \item Nachdem ihm dies durch die neue Sendestation bestätigt wurde,
+    signalisiert der mobile Nutzer dem MSC über die neue Sendestation, dass
+    er eine Verbindung zur neuen Sendestation aufgebaut hat und das MSC leitet
+    alle Nachrichten nun über die neue Sendestation an den mobilen Nutzer weiter
+  \item Das MSC signalisiert der alten Sendestation, dass sie die für den
+    mobilen Nutzer reservierten Ressourcen freigeben kann
+  \end{enumerate}
+\item Falls der mobile Nutzer nicht nur die Sendestation (Zelle) wechselt,
+  sondern vom Zuständigkeitsbereich eines MSC in den eines anderen MSC, so
+  wird wieder \emph{Chaining} angewandt und je nach Protokoll noch zusätzliche
+  Schritte durchgeführt, um die Kette nicht allzu lang werden zu lassen
+\end{itemize}
+
+\section{Multimedia}
+
+\begin{itemize}
+\item \emph{Streaming} von Multimediadaten bedeutet, dass die Daten zentral
+  auf einem Server
+  gespeichert sind und zu einem oder mehreren Clients gesendet werden, welche
+  bereits mit dem Abspielen beginnen, bevor alle Daten eingetroffen sind
+\item Im Gegensatz zur Datenübertragung ist das Streaming von Audio- und
+  Videodaten verlusttolerant, jedoch \emph{nicht} verzögerungstolerant, d.h.
+  es ist nicht schlimm, falls einzelne Pakete verlorengehen, jedoch sollte
+  der \emph{Jitter} (das ist der Unterschied der Übertragungsverzögerung
+  einzelner Pakete) nicht allzu groß sein
+\item Streaming gespeicherter Audio- und Videodaten
+  \begin{itemize}
+  \item Die Daten sind zentral auf einem Server gespeichert und werden zum
+    Client übertragen, welcher sie zunächst zum Ausgleich des Jitters in einem
+    Puffer zwischenspeichert, jedoch noch bevor alle Daten eingetroffen sind
+    mit der Wiedergabe beginnt
+  \item Zeitvorgabe für die noch nicht übertragenen Daten: Sie müssen
+    spätestens beim Client eingetroffen sein, wenn sie mit der Wiedergaben
+    dran sind
+  \item Als Interaktionen des Clients sind möglich: Vor- und Zurückspulen,
+    Pause, Stop
+  \end{itemize}
+\item Live-Streaming von Audio- und Videodaten
+  \begin{itemize}
+  \item Der Client verwendet wie oben einen Puffer und es existieren die
+    selben Zeitvorgaben
+  \item Als Interaktionen sind möglich: Zurückspulen, Pause, Stop, jedoch
+    kein Vorspule (die Daten werden ja schließlich erst live erzeugt ;)
+  \end{itemize}
+\item Interaktives Audio- und Videostreaming in Echtzeit (z.B.
+  Internettelefonie)
+  \begin{itemize}
+  \item Hier existieren spezielle Anforderungen an die Übertragungsverzögerung
+    (einschließlich Verarbeitungszeit für die Pakete),
+    da eine Verzögerung von bis zu $150\,$ms noch als Echtzeit wahrgenommen
+    wird, eine Verzögerung von bis zu $400\,$ms noch OK ist und alles darüber
+    hinaus abgehackt erscheint
+  \item Außerdem müssen hier typscherweise Informationen wie IP-Adressen,
+    Portnummern und
+    Kodierungsalgorithmen erst gegenseitig bekanntgemacht werden, es muss
+    also auf beiden Seiten eine \emph{Session} aufgebaut werden
+  \end{itemize}
+\item Das heutige Internet bietet das \emph{»best-effort«} Servicemodell, was
+  jedoch keinerlei Zeitvorgaben oder Bandbreitengarantien vorsieht, wie sie
+  für Multimediaübertragungen benötigt werden
+\item Heutige Multimedia-Anwendungen versuchen daher, die benötigten
+  Eigenschaften auf Anwendungsebene zu realisieren, was jedoch nicht immer
+  sehr gut gelingt, weshalb es denkbar wäre, das Internet an diese neuen
+  Anforderungen anzupassen
+\end{itemize}
+
+\paragraph{Audiokompression}
+
+\begin{itemize}
+\item Ein analoges Signal wird zunächst zu äquidistanten Zeitpunkten
+  abgetastet, man spricht von sog. \emph{Sampling}, z.B. beim Telefon
+  8000 mal pro Sekunden oder bei einer CD 44100 mal pro Sekunde
+\item Jedes so entstandene Sample wird nun \emph{quantisiert}, d.h. es wird
+  gerundet, sodass der gesamte Wertebereich der Signalfunktion nur noch
+  eine bestimmte Anzahl, z.B. 256, verschiedene Werte hat, welche durch
+  Bitkombinationen kodiert werden, z.B. $256 = 2^8$, also werden 256 Werte
+  durch 8 Bit lange Wörter kodiert
+\item Somit hat eine Telefonleitung, welche 8000 mal pro Sekunde abgetastet
+  wird und mit 256 Werten quantisiert wird, eine Übertragungsrate von
+  64000 bps
+\item Der Empfänger dieses Signals konvertiert es zurück in die analoge Welt,
+  wobei natürlich aufgrund der Quantisierung (Rundung) geringe Fehler entstehen
+\item Beispiele für Datenraten
+  \begin{itemize}
+  \item CD: 1{,}411 Mbps
+  \item MP3: 96, 128, 160, 192, 256 kbps
+  \item Internet-Telefonie: 5{,}3 -- 13 kbps
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Videokompression}
+
+\begin{itemize}
+\item Ein Video ist nichts anderes als eine Abfolge einzelner Bilder (z.B.
+  24 Bilder pro Sekunde) und ein Bild nichts anderes als ein Array von Pixeln,
+  welche durch Bitwörter kodiert werden
+\item Zur Videokompression nutzt man zeitliche und räumliche Redundanzen
+  innerhalb der Bilderfolge aus
+\item Typische Datenraten sind dabei
+  \begin{itemize}
+  \item MPEG 1 (CD-ROM): 1{,}5 Mbps
+  \item MPEG 2 (DVD): 3 -- 6 Mbps
+  \item MPEG 4 (oft im Internet genutzt): $< 1$ Mbps
+  \end{itemize}
+\item Geforscht wird an Videos, welche ihre Datenrate an die
+  jeweilige Übertragungsrate verschiedener Clients anpassen können
+\end{itemize}
+
+\subsection{Streaming gespeicherter Multimediadaten}
+
+\begin{itemize}
+\item Erste und einfachste Lösung
+  \begin{itemize}
+  \item Die Multimediadaten werden vom Web-Server als HTTP-Objekt übertragen
+    und nach Empfang an einen Mediaplayer übergeben
+  \item Nachteil: Es muss erste die gesamte Datei übertragen werden, bevor
+    mit dem Abspielen begonnen werden kann (also eigentlich gar kein Streaming)
+  \end{itemize}
+\item Etwas bessere Lösung
+  \begin{itemize}
+  \item Der Brower holt sich per GET-Anfrage lediglich eine Meta-Datei,
+    übergibt diese einem Media-Player, welcher wiederum die eigentlichen
+    Multimediadaten vom Webserver anfragt
+  \item Nachteil ist hier, dass die Multimediadaten immer noch über das HTTP
+    und somit TCP übertragen werden
+  \item Vorteil ist immerhin, dass der Mediaplayer die Multimediadaten vom
+    Server anfragt und somit schon während des Empfangs mit der Wiedergabe
+    beginnen kann
+  \end{itemize}
+\item Beste, weil variabelste, Lösung
+  \begin{itemize}
+  \item Der Browser holt sich per GET-Anfrage wiederum eine Meta-Datei,
+    welche einem Mediaplayer übergeben wird
+  \item Der Mediaplayer streamt nun die Multimediadaten jedoch nicht vom
+    Webserver, sondern von einem speziellen Streaming-Server
+  \item So ist es möglich, dass Streaming-Server und Mediaplayer nicht das
+    HTTP, sondern ein spezielles Streaming-Protokoll nutzen
+    (dazu später mehr) und so z.B. auch auf TCP verzichten und lieber UDP
+    nutzen
+  \end{itemize}
+\item Es lässt sich nicht eindeutig sagen, ob man zum Streaming von
+  Multimediadaten besser TCP oder UDP verwendet, da beides Vor- und
+  Nachteile hat, so geht TCP leichter durch Firewalls durch ist »verträglicher«
+  für das Netzwerk, jedoch wird auf der anderen Seite die Übertragungsrate
+  aufgrund der Überlastkontrolle von TCP stark fluktuieren, was bei UDP
+  so nicht passieren würde
+\item Da unterschiedliche Clients auch mit verschiedenen Übertragungsraten
+  ans Internet angebunden sind, sollten auf einem Streaming-Server von
+  einer Multimediadatei mehrere Versionen vorhanden sein, um jedem Client
+  jeweils eine Version in seiner Übertragungsrate zukommen lassen zu können
+\end{itemize}
+
+\subsubsection{RTSP}
+
+\begin{itemize}
+\item Da HTTP keine Steuerbefehle, wie z.B. Vorspulen, unterstützt, ist es
+  als Streaming-Protokoll ungeeignet und es wurde das RTSP (»real time
+  streaming protocol«) entwickelt
+\item Das RTSP definiert Steuerbefehle für Multimedia-Streams, jedoch
+  \emph{nicht}, wie die eigentlichen Audio- oder Videodaten übertragen werden
+  (Format, UDP/TCP) oder wie Mediaplayer die Daten puffern sollen
+\item Ähnlich wie beim FTP wird hier zum Übertragen der Steuerungsnachrichten
+  eine extra Verbindung aufgebaut, die den Port 554 verwendet
+\item Nachdem ein Mediaplayer vom Browser die Datei mit den Meta-Informationen
+  zum Stream bekommen hat, baut er zum Streaming-Server also eine Daten- und
+  eine Steuerverbindung auf und beendet diese am Ende wieder (SETUP- und
+  TEARDOWN-Befehle vom RTSP)
+\end{itemize}
+
+\subsection{Interaktive Echtzeit-Anwendungen}
+
+\begin{itemize}
+\item Es gibt viele mögliche Beispiele, jedoch soll hier näher auf den Fall
+  eingegangen werden, bei dem ein Anwender an einem PC mit einem anderen
+  Anwender auch an einem PC über das Internet telefoniert
+\item In diesem Fall werden nur während der Sprechphasen Daten über UDP
+  gesendet und
+  zwar alle 20 ms mit einer Datenrate von 64 kbps, also jeweils 160 Byte
+  an Sprachdaten pro Paket
+\item Ein Paket gilt hier aufgrund der strengen Zeitvorgaben nicht nur als
+  verloren, wenn es während der Übertragung verloren geht, sondern auch, wenn
+  es »zu spät« beim Empfänger ankommt, also erst nachdem es eigentlich hätte
+  abgespielt werden sollen
+\item Je nach Protokoll können Verlustraten bis zu $10\,\%$ ausgeglichen werden
+\item Es gibt zwei Varianten, wann der Empfänger jeweils mit dem Abspielen von
+  Sprechphasen beginnt
+  \begin{enumerate}
+  \item Er wählt eine \emph{fixe Verzögerung} $t\,$ms und versucht jedes Paket
+    genau
+    $t\,$ms nach dessen Generierung durch den Sender abzuspielen und kommt ein
+    Paket später an, gilt es als verloren und wird verworfen
+  \item Er berechnet für jedes Paket aus einer Konstante $u$ (z.B. $u=0{,}01$)
+    und der
+    Übertragungsverzögerung des $i$-ten Pakets $n_i$ die durchschnittliche
+    Übertragungsverzögerung $d_i$ nach der Formel
+    $d_i = (1-u)d_{i-1} + un_i$
+    und die durchschnittliche Abweichung der Übertragungsverzögerung $v_i$ nach
+    der Formel
+    $v_i = (1-u)v_{i-1} + u|n_i - d_i|$,
+    woraus sich mit einer weiteren positiven Konstanten $K$ die
+    \emph{dynamische Verzögerung} $p_i$ ergibt durch
+    $p_i = t_i + d_i + Kv_i$.
+  \end{enumerate}
+\item Problem bei der fixen Verzögerung ist, dass sie einerseits nicht zu
+  groß sein darf, damit das Echtzeitgefühl nicht verlorengeht, und auf der
+  anderen Seiten auch nicht zu klein, damit noch genügend Pakete rechtzeitig
+  zum Abspielen eintreffen
+\item Zum Setzen einer dynamischen Verzögerung muss der Empfänger wissen,
+  welches Paket das erste einer Sprechphase ist, da nur in diesem Fall die
+  Verzögerung neu gesetzt wird und spätere Pakete einfach periodisch
+  abgespielt werden, was er aufgrund von Zeitstempeln und Sequenznummern
+  herausbekommen kann
+\end{itemize}
+
+\subsubsection{RTP}
+
+\begin{itemize}
+\item Das RTP (»real-time transport protocol«) ist ein Andwendungsprotokoll
+  und ist als
+  solches auf den Endsystemen realisiert
+\item Es nutzt zur Übertragung UDP und spezifiziert die Struktur von Paketen,
+  welche zum Austausch von Multimediadaten benutzt werden (vgl.
+  \hyperref[fig:rtp]{Abbildung~\ref*{fig:rtp}})
+  \begin{description}
+  \item[Typ] Diese 7 Bit geben die Multimedia-Kodierung an, mit der die in
+    diesem Paket enthaltenen Daten kodiert sind (der Sender kann also
+    theoretisch die Kodierung auch während der laufenden Übertragung ändern)
+    \begin{itemize}
+    \item 0 steht für PCM mu-law mit 64 kbps
+    \item 3 steht für GSM mit 13 kbps
+    \item 7 steht für LPC mit 2{,}4 kbps
+    \item 26 steht für Motion JPEG
+    \item 31 steht für H.261
+    \item 33 steht für MPEG2 video
+    \end{itemize}
+  \item[Sequenznummer] Wie bereits oben dargelegt, wird die Sequenznummer
+    benötigt um z.B. herauszufinden, ob ein Paket das erste einer Sprechphase
+    ist
+  \item[Zeitstempel] Der Zeitstempel wird analog zu den gesendeten Samples
+    inkrementiert
+  \item[SSI] Dieses Feld (»synchronization source identifier«) macht es
+    möglich jedes Paket genau einem Stream zuzuordnen, falls z.B. für die
+    Audio- und Videoübertragung zwei getrennte Streams verwendet werden
+  \item[Verschiedene Felder] Hier können weitere optionale Felder eingefügt
+    werden
+  \end{description}
+\item Das RTP garantiert \emph{keinerlei QoS-Anforderungen}, wie z.B. dass ein
+  Paket innerhalb eines gewissen Zeitfensters beim Empfänger eintreffen soll
+\end{itemize}
+
+\begin{figure}[tbp]
+  \centering
+  \begin{pgfpicture}
+    \pgfsetlinewidth{1pt}
+    \pgfrect[stroke]{\pgfxy(0,0)}{\pgfxy(1,1)}
+    \pgfputat{\pgfxy(0.5,1.2)}{\pgfbox[center,center]{\tiny 7 Bit}}
+    \pgfputat{\pgfxy(0.5,0.5)}{\pgfbox[center,center]{Typ}}
+    \pgfrect[stroke]{\pgfxy(1,0)}{\pgfxy(2,1)}
+    \pgfputat{\pgfxy(2,1.2)}{\pgfbox[center,center]{\tiny 16 Bit}}
+    \pgfputat{\pgfxy(2,0.7)}{\pgfbox[center,center]{Sequenz-}}
+    \pgfputat{\pgfxy(2,0.3)}{\pgfbox[center,center]{nummer}}
+    \pgfrect[stroke]{\pgfxy(3,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(5,1.2)}{\pgfbox[center,center]{\tiny 32 Bit}}
+    \pgfputat{\pgfxy(5,0.5)}{\pgfbox[center,center]{Zeitstempel}}
+    \pgfrect[stroke]{\pgfxy(7,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(9,1.2)}{\pgfbox[center,center]{\tiny 32 Bit}}
+    \pgfputat{\pgfxy(9,0.5)}{\pgfbox[center,center]{SSI}}
+    \pgfrect[stroke]{\pgfxy(11,0)}{\pgfxy(4,1)}
+    \pgfputat{\pgfxy(13,1.2)}{\pgfbox[center,center]{\tiny variabel}}
+    \pgfputat{\pgfxy(13,0.7)}{\pgfbox[center,center]{Verschiedene}}
+    \pgfputat{\pgfxy(13,0.3)}{\pgfbox[center,center]{Felder}}
+    \pgfsetlinewidth{0.5pt}
+    \pgfxyline(0,1.1)(0,1.3)
+    \pgfxyline(0,1.2)(0.15,1.2)
+    \pgfxyline(0.85,1.2)(1.6,1.2)
+    \pgfxyline(1,1.1)(1,1.3)
+    \pgfxyline(2.4,1.2)(4.6,1.2)
+    \pgfxyline(3,1.1)(3,1.3)
+    \pgfxyline(5.4,1.2)(8.6,1.2)
+    \pgfxyline(7,1.1)(7,1.3)
+    \pgfxyline(9.4,1.2)(12.5,1.2)
+    \pgfxyline(11,1.1)(11,1.3)
+    \pgfxyline(13.5,1.2)(15,1.2)
+    \pgfxyline(15,1.1)(15,1.3)
+  \end{pgfpicture}
+  \caption{Aufbau eines RTP-Headers}
+  \label{fig:rtp}
+\end{figure}
+
+\subsubsection{RTCP}
+
+\begin{itemize}
+\item Das RTCP (»real-time control protocol«) wird zusammen mit dem RTP
+  benutzt, um auf einem anderen Port Statistiken zwischen Sender und
+  Empfängern auszutauschen, die nützlich sein können, um die Übertragung
+  ggf. anzupassen
+\item Mögliche Pakete sind
+  \begin{itemize}
+  \item Der Empfänger teilt dem Sender mit, wie groß der Verlustanteil ist,
+    wie die Sequenznummer des letzten Pakets war, das er empfangen hat und
+    wie der durchschnittliche Jitter war
+  \item Der Sender teilt den Empfängern die SSI des zugehörigen RTP-Streams,
+    die aktuelle Zeitposition, die Anzahl gesendeter Pakete und die Anzahl
+    gesendeter Bytes mit
+  \item Spezielle Pakete, welche die Quelle des RTP-Streams beschreiben,
+    enthalten den Namen und die E-Mail-Adresse des Senders, sowie die SSI
+    des RTP-Streams und ein Mapping von der SSI auf der Hostnamen des
+    Senders
+  \end{itemize}
+\item Das RTCP kann eingesetzt werden, um mehrere Streams (typischerweise
+  einen Audio- und einen Videostream) zu synchronisieren, was allein
+  aufgrund der im RTP enthaltenen Zeitstempel nicht möglich ist, da diese
+  sich nach den gesendeten Samples im jeweiligen Stream, aber nicht nach
+  der tatsächlichen Uhrzeit richten
+\item In RTCP-Paketen kann nun ein Mapping zwischen den aktuellen Zeitstempeln
+  der Streams und der tatsächlichen Uhrzeit übertragen werden, woraus die
+  Empfänger eine Synchronisation berechnen können
+\item Das RTCP versucht, insgesamt nur maximal $5\,\%$ der maximal verfügbaren
+  Bandbreite zu nutzen, davon teilen sich alle Empfänger $75\,\%$ und der
+  Sender darf $25\,\%$ nutzen
+\end{itemize}
+
+\subsubsection{SIP}
+
+\begin{itemize}
+\item Das SIP (»session initiation protocol«) ist ein Verfahren, um
+  Telefonanrufe und Videokonferenzen über das Internet zu organisieren
+\item Dabei kümmert sich das SIP um
+  \begin{itemize}
+  \item den Aufbau einer Verbindung zu einem oder mehreren anderen Personen,
+  \item aus Aushandeln einer geeigneten Kodierung, die Sender und Empfänger
+    verstehen können,
+  \item den geordneten Abbau einer Verbindung,
+  \item das Mapping von Namen und E-Mail-Adressen zu IP-Adressen,
+  \item das Hinzufügen neuer Teilnehmen zu einer Konferenz,
+  \item das Hinzufügen neuer Streams zu einer laufenden Verbindung und
+  \item anderes
+  \end{itemize}
+\item Das SIP verwendet eine auch für Menschen leicht lesbare an das HTTP
+  angelehnte Syntax
+\item Um Namen auf (möglicherweise wechselnde) IP-Adressen zu mappen,
+  verwendet das SIP eine Kombination aus zentralen Registrar-Servern und
+  lokalen Proxyservern
+\item Falls ein Client einen anderen anrufen möchte, verbindet er sich zu
+  seinem lokalen Proxy, der beim zentralen Registrar-Server die aktuelle
+  IP des Angerufenen herausfindet und sich um das Routing des Anrufs zum
+  richtigen Ziel kümmert
+\end{itemize}
+
+\subsection{Ausgleichen von Paketverlust}
+
+\begin{itemize}
+\item Zunächst einmal sei gesagt, dass das Streaming von Multimediadaten
+  generell robust gegenüber dem Verlust einzelner Pakete ist, was im schlimmsten
+  Fall ein kleines Knacksen im Ton oder einen leichten Bildfehler im Video
+  bedeutet
+\item Natürlich bemüht man sich trotzdem Paketverluste auszugleichen, wozu
+  verschiedene Verfahren denkbar sind
+\item Ein einfaches Verfahren, um einen Paketverlust auszugleichen, ist,
+  für jeweils $n$ Pakete ein zusätzliches Paket zu senden, das aus der
+  XOR-Verknüpfung der $n$ Pakete besteht
+  \begin{itemize}
+  \item Somit kann ein einzelnes verlorenes Paket komplett rekonstruiert werden
+  \item Problematisch ist das Verfahren nur, falls $n$ zu groß gewählt wird
+    oder aus einem anderen Grund zwei oder mehr Pakete verloren gehen
+  \end{itemize}
+\item Eine weitere Möglichkeit besteht darin, in jedem Paket zusätzlich zu
+  den aktuellen Multimediadaten auch noch die Daten des vorangegangenen
+  Pakets in geringerer Qualität zu senden
+  \begin{itemize}
+  \item So kann ein verlorenes Paket immerhin in geringerer Qualität
+    wiedergegeben werden, wovon der Nutzer aufgrund der kurzen Dauer eines
+    Pakets wahrscheinlich gar nichts mitbekommt
+  \item Problematisch wird es hier ebenfalls, wenn zwei oder mehr Pakete
+    verlorengehen
+  \end{itemize}
+\item Die dritte Möglichkeit Paketverluste auszugleichen besteht im
+  \emph{Interleaving}, wobei jedes Paket des original generierten Streams
+  in mehrere Teile aufgeteilt wird und diese dann in unterschiedlichen
+  Paketen gesendet werden, sodass bei Verlust eines Pakets nur jeweils
+  kleine Teile der ursprünglichen Pakete verloren gehen
+  \begin{itemize}
+  \item Vorteil dieses Verfahrens ist, dass kein zusätzlicher Overhead
+    entsteht, sondern darauf gesetzt wird, dass so kleine Teile der
+    ursprünglichen Pakete verloren gehen, dass der Empfänger das beim
+    Abspielen gar nicht bemerkt
+  \item Nachteil ist hier vor allem, dass der Empfänger so lange mit dem
+    Abspielen warten muss, bis alle Pakete eingetroffen sind, auf welche ein
+    ursprüngliches Paket aufgeteilt wurde
+  \end{itemize}
+\end{itemize}
+
+\subsection{CDNs}
+
+\begin{itemize}
+\item Um große Verzögerungen beim Streaming von großen Dateien zu verhindern,
+  kann man CDNs (»content distribution networks«) verwenden, welche dafür
+  sorgen, dass die eine große Datei nicht nur auf einem zentralen Server liegt,
+  sondern auf vielen Servern am Rand des Internets gespiegelt wird
+\item Das sorgt dafür, dass die große Datei näher beim tatsächlichen Nutzer
+  ist und lange Pfade von diesem durchs Internet zu der Datei vermieden werden
+\item Die Verteilung geschieht dabei für den Nutzer transparent über
+  authoritative DNS-Server des CDN-Anbieters, welcher Anfragen des Nutzers
+  auf den lokalen Spiegel-Server umleitet
+\end{itemize}
+
+\subsection{Quality of Service}
+
+\subsubsection{Prinzipien}
+
+\begin{itemize}
+\item Bis jetzt wurde immer vom »best-effort« Servicemodell des Internets
+  ausgegangen und die verschiedenen Multimedia-Anwendungen haben versucht,
+  daraus möglichst viele QoS-Garantien herauszuholen, was mehr oder weniger von
+  Erfolg gekrönt war
+\item Jedoch ist es auch möglich Vorkehrungen zu treffen, um QoS-Anforderungen
+  gezielt und in jedem Fall umsetzen zu können
+\item Dazu ist folgendes notwendig
+  \begin{enumerate}
+  \item Pakete müssen markiert werden können, um so verschiedenen Klassen
+    zugeordnet werden zu können und Router müssen in der Lage sein, Pakete
+    entsprechend ihrer Klasse bevorzugt weiterzuleiten
+  \item Um Missbrauch zu vermeiden, müssen die Sender gezwungen werden können,
+    sich an Datenraten-Vorgaben zu halten und zuviel gesendete Pakete notfalls
+    verworfen werden
+  \item Obwohl die verfügbare Bandbreite aufgeteilt wird, sollte sie möglichst
+    effizient genutzt werden, auch falls jemand die ihm zugeteilte Bandbreite
+    gerade nicht nutzt
+  \item Falls nicht genügend Bandbreite frei ist, werden keine neuen Sender
+    mehr akzeptiert
+  \end{enumerate}
+\end{itemize}
+
+\subsubsection{Scheduling-Mechanismen}
+
+\begin{itemize}
+\item Um die oben genannten Prinzipien durchzusetzen, ist es an jedem Router
+  erforderlich, nach bestimmten Kriterien das nächste weiterzuleitende Paket
+  zu bestimmen
+\item Dazu gibt es verschiedene Ansätze
+  \begin{itemize}
+  \item FIFO (»first in first out«): Die Pakete werden in der Reihenfolge
+    bearbeitet und weitergeleitet, in der sie auch eintreffen, wobei
+    lediglich bei einer vollen Queue Pakete verworfen werden und zwar entweder
+    ein zufälliges, das letzte, das eingetroffen ist, oder das mit der
+    niedrigsten Priorität
+  \item Priorität: Pakete sind laut obigem Prinzip 1 markiert und können so
+    verschiedenen Klassen zugeordnet werden, wobei man sich vorstellen kann,
+    dass jeweils eine Klasse eine höhrere Priorität als eine andere hat und
+    so die Pakete anhand ihrer Priorität, die von
+    verschiedensten Faktoren abhängen kann (Markierung im Header, verwendetes
+    Protokoll, Quell- oder Zieladresse), weitergeleitet werden
+  \item Im Falle mehrerer Klassen ist es auch denkbar, dass die Klassen nicht
+    mit unterschiedlichen Prioritäten assoziiert werden, sondern alle gleich
+    behandelt und alle in gleichem Maße weitergeleitet werden (»round robin
+    scheduling«)
+  \item Eine Generalisierung letzteren Verfahrens ist, wenn jede Klasse nicht
+    gleichbehandelt wird, sondern mit einem Gewicht versehen und proportional
+    dazu weiterverarbeitet wird (WFQ, »weighted fair queuing«)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Policing-Mechanismen}
+
+\begin{itemize}
+\item Oben aufgeführte Scheduling-Mechanismen regeln im Wesentlichen die
+  Reihenfolge, in der Pakete an den einzelnen Station bearbeitet werden,
+  die Policing-Mechanismen regeln, wie viele Pakete an einer Station maximal
+  bearbeitet werden dürfen
+\item Hier wird hauptsächlich mit folgenden drei Begriffen gearbeitet
+  \begin{description}
+  \item[Durchschnittliche Datenrate] Hierbei wird festgelegt, wie viele
+    Pakete durchschnittlich in einer bestimmten Zeiteinheit versendet werden
+    können, dabei ist die verwendete Zeiteinheit von wichtiger Bedeutung
+    (100 Pakete pro Sekunde und 6000 Pakete pro Minuten stellen denselben
+    Durchschnittswert dar, jedoch kann letzteres in höheren Bursts am
+    Anfang des Zeitintervalls resultieren)
+  \item[Spitzenrate] Dürfen etwa 6000 Pakete pro Minute versendet werden, so
+    kann man durch eine Spitzenrate von 1500 Pakete pro Minute zusätzlich
+    die Bursts am Beginn eines Zeitintervalls einschränken
+  \item[Maximale Burstgröße] Dies ist die maximale Anzahl von Pakten, die
+    aufeinanderfolgend gesendet werden dürfen, ohne dass dazwischen eine
+    Pause eingelegt wird
+  \end{description}
+\item Bei einer Variante des Policing gibt es einen Vorrat an Tokens, von denen
+  in regelmäßigen Zeitabständen neue generiert werden, und es darf nur pro
+  Token ein Paket gesendet werden, wodurch das Token verbraucht wird
+\item Durch dieses Verfahren kann die Datenrate auf einen Durchschnittswert und
+  eine maximale Burstgröße limitiert werden
+\item Im Zusammenhang mit WFQ bietet dieses tokenbasierte Policing-Verfahren
+  eine obere Schranke für die Verzögerung an einem Knoten, also eine
+  QoS-Garantie
+\end{itemize}
+
+\subsubsection{IntServ}
+
+\begin{itemize}
+\item IntServ (»integrated services«) sichert einzelnen Anwendungs-Sessions
+  QoS-Garantien in IP-Netzwerken zu
+\item Um das zu erreichen verwaltet jeder Router, ähnlich wie bei virtuellen
+  Verbindungen, für jede Anwendungs-Session, deren Pakete er routen muss,
+  einen Zustand und reserviert entsprechende Ressourcen
+\item Aufgrund der Einträge in seiner Zustandstabelle und der zur Verfügung
+  stehenden Ressourcen, kann ein Router neue Anfragen akzeptieren oder ablehnen
+\item Bevor also die eigentlich Datenübertragung stattfinden kann, werden
+  mittels des weiter unten beschriebenen RSVP bei allen Routern entlang des
+  Pfades zwischen Sender und Empfänger die nötigen Ressourcen reserviert
+\item Falls eine neue Session aufgebaut wird, schickt der Sender ein RSVP-Paket
+  vorweg, das die gewünschten QoS-Anforderungen deklariert und erhält als
+  Antwort entweder, dass die gewünschten Ressourcen bei allen Routern auf
+  dem Pfad zum Ziel reserviert sind, oder dass momentan eine Verbindung
+  mit diesen Anforderungen nicht aufgebaut werden kann
+\item IntServ bietet zwei unterschiedliche Dienstklassen an
+  \begin{enumerate}
+  \item Die erste garantiert eine genau in Zahlen angegebene maximale
+    Ende-zu-Ende-Verzögerung und eine maximale Datenrate (»guaranteed service«)
+  \item Die zweite bietet lediglich in etwa die Übertragungsverzögerung und
+    Datenrate an, die bei einem nicht ausgelasteten Netzsegment auftreten
+    würde
+  \end{enumerate}
+\item Probleme von IntServ sind zum einen fehlende Skalierbarkeit und die
+  nur wenigen (zwei) Dienstklassen
+\end{itemize}
+
+\paragraph{RSVP}
+
+\begin{itemize}
+\item Um Dienste wie IntServ realisieren zu können, wird ein Mechanismus
+  benötigt, um »dem Netz« die QoS-Anforderungen einer Verbindung mitzuteilen,
+  was im ursprünglichen Modell eines (zustandlosen) IP-Netzes nicht vorgesehen
+  ist
+\item Zu diesem Zweck wurde das RSVP (»resource reservation protocol«)
+  mit folgenden Zielen entwickelt
+  \begin{enumerate}
+  \item Es müssen Knoten mit unterschiedlichen Datenraten möglich sein
+  \item Es müssen die verschiedenen Anforderungen unterschiedlicher
+    Anwendungen berücksichtigt werden können
+  \item Unterstützung von \emph{Multicasts}, also Nachrichten von einem
+    Sender an mehrere Empfänger
+  \item Überlagerung der bereits bestehenden Routing-Mechanismen mit der
+    Möglichkeit der Anpassung an eine Änderung des Routing-Pfads
+  \item Der entstehende Overhead soll im schlimmsten Fall linear zur Anzahl
+    der Empfänger wachsen
+  \item Das Verfahren soll modular aufgebaut sein, um verschiedenste
+    zugrundeliegende Technologien zu unterstützen
+  \end{enumerate}
+\item Das RSVP spezifiziert dabei \emph{nicht}, \emph{wie} die angeforderten
+  Ressourcen reserviert werden sollen, sondern stellt nur einen Mechanismus
+  zur Verfügung, den Bedarf an Ressourcen ans Netz zu kommunizieren
+\item Es wird auch kein Einfluss auf die Route der Pakete oder die Art der
+  Weiterleitung genommen
+\item Ein Verbindungsaufbau unter Verwendung des RSVP verläuft nach folgendem
+  Schema
+  \begin{enumerate}
+  \item Zunächst schickt jeder Sender einer Multicast- oder Unicast-Gruppe
+    eine \emph{Pfad-Nachricht} an alle Empfänger, wodurch ein Pfad vom Sender
+    zu allen Empfängern gefunden wird und die dabei passierten Router
+    gespeichert werden
+  \item Die Empfänger antworten daraufhin mit einer
+    \emph{Reservierungs-Nachricht}, welche den umgekehrten Weg geht und die
+    Bandbreiten-Anforderungen bei allen Routern reserviert, sowie ggf. über
+    \emph{Filter} limitiert, von welchem Sender ein Empfänger tatsächlich
+    empfangen möchte
+  \item Falls diese beiden Schritte erfolgreich ausgeführt werden konnten und
+    die Reservierungs-Nachricht beim Sender ankommt, ist die Verbindung
+    aufgebaut, anderenfalls erhält der Sender eine Fehlermeldung »vom Netz«
+    (z.B. »kein passender Pfad zu Empfänger X gefunden« oder »momentan nicht
+    ausreichend Bandbreite verfügbar«)
+  \end{enumerate}
+\item Der ordnungsgemäße Verbindungsabbau erfolgt ähnlich wie der -aufbau
+  über entsprechende Nachrichten von Sender und Empfänger
+\item Um zu vermeiden, dass die Zustandseinträge eines Senders oder Empfängers,
+  der abgestürzt ist oder aus einem anderen Grund keine ordnungsgemäße
+  End-Nachricht senden konnte, ewig die Zustandstabellen der Router blockieren,
+  werden in regelmäßigen Zeitabständen \emph{Refresh-Nachrichten} erwartet und
+  ansonsten die Zustände nach einer gewissen Zeit gelöscht (»soft states«)
+\item Dieses Verhalten macht es unnötig, speziell auf verloren gegangene
+  Refresh-Nachrichten zu reagieren, und ermöglicht es, während dem laufenden
+  Betrieb z.B. neue Sender zu einer bestehenden Multicast-Gruppe hinzuzufügen
+\end{itemize}
+
+\subsubsection{DiffServ}
+
+\begin{itemize}
+\item DiffServ (»differentiated services«) soll die oben genannten Probleme
+  von IntServ umgehen, wozu die Komplexität in die Endsysteme (Hosts und
+  Edge-Router) ausgelagert wird und das Netz lediglich die Funktionalität
+  anbietet, verschiedene Dienstklassen zu definieren
+\item Edge-Router markieren Pakete je nach Klassenzugehörigkeit und außerdem,
+  ob sie noch innerhalb der vorher vereinbarten Datenrate gesendet wurden
+  (»in-profile«) oder nicht (»out-profile«), wobei sie in letzterem Fall
+  verzögert oder gar nicht gesendet werden können
+\item Core-Router arbeiten auf Basis der Klassenzugehörigkeit der Pakete
+  und bearbeiten bevorzugt Pakete, die als »in-profile« markiert sind, falls
+  jedoch noch Kapazitäten frei sind, können zusätzlich »out-profile«-Pakte
+  weitergeleitet werden
+\item Insgesamt haben alle Core-Router eine PHB (»per-hop behaviour«), die
+  in einer messbaren Performanz resultiert, jedoch \emph{nicht} spezifiziert,
+  mit welchen Mitteln diese Performanz erreicht werden soll
+\item Folgende zwei PHBs wurden entwickelt
+  \begin{enumerate}
+  \item Die Verarbeitungsrate einer bestimmten Klasse ist größer oder gleich
+    einem spezifizierten Minimum, woraus für jede logische Verbindung eine
+    minimale, aber garantierte, Datenrate folgt (»expedited forwarding«)
+  \item Eine etwas komplexere Strategie definiert vier Klassen, denen jeweils
+    eine bestimmte Bandbreite zugesichert wird, und die jeweils in drei
+    Unterklassen unterteilt sind, die sich anhand der Wahrscheinlichkeit
+    unterscheiden, mit der die jeweiligen Pakete im Fall der Überlastung
+    des Netzes verworfen werden
+  \end{enumerate}
+\item Da schwierig bis gar nicht überprüft werden kann, ob die Markierungen von
+  Paketen richtig gesetzt sind oder ob jemand lediglich versucht, seinen
+  Paketen eine höhere Priorität einzuräumen, werden von den Providern Grenzen
+  (»trust boundaries«) definiert (typischerweise die Switches, an denen die
+  Endgeräte angeschlossen sind), wo eventuell bereits vorhandene Markierungen
+  überschrieben werden
+\end{itemize}
+
+\section{Sicherheit}
+
+\begin{description}
+\item[Vertraulichkeit] Nur der Sender und der Empfänger einer Nachricht sind
+  in der Lage auch den Inhalt selbiger zu verstehen
+\item[Authentifizierung] Der Sender und der Empfänger einer Nachricht möchten
+  sicherstellen, dass der jeweils andere auch der ist, der er vorgibt zu sein
+\item[Integrität] Sender und Empfänger einer Nachricht möchten sicherstellen,
+  dass die Nachricht nicht verändert wurde, zumindest nicht, ohne dass es
+  bemerkt wird
+\end{description}
+
+\subsection{Symmetrische Verschlüsselungs-Verfahren}
+
+\begin{itemize}
+\item Ein symmetrisches Verschlüsselungs-Verfahren ist dadurch gekennzeichnet,
+  dass Sender und Empfänger einen gemeinsamen Schlüssel verwenden, mit dem
+  sowohl ver- als auch entschlüsselt wird
+\item Großes Problem dabei ist, dass sich Sender und Empfänger auf diesen
+  Schlüssel einigen müssen
+\item Ein verbreitetes symmetrisches Verfahren ist \emph{DES (»data encryption
+    standard«}, das mit einem 56 Bit langen Schlüssel arbeitet und jeweils
+  64 Bit lange Plaintext-Blöcke verschlüsselt
+\item DES kann mit Brute-Force-Methoden innerhalb von etwa 4 Monaten geknackt
+  werden
+\item Um die Sicherheit von DES zu erhöhen, können mehrere Schlüssel für
+  jeweils aufeinanderfolgende Datenblöcke verwendet werden, oder der Text
+  mehrfach mit verschiedenen Teilen desselben Schlüssels verschlüsselt werden
+\item Eine Verbesserung von DES ist \emph{AES (»advances encryption standard«)},
+  das doppelt so lange Plaintext-Blöcke mit längeren Schlüsseln verschlüsselt,
+  wodurch die Dauer eines Brute-Force-Angriffs erheblich steigt
+\end{itemize}
+
+\subsection{Asymmetrische Verschlüsselungs-Verfahren}
+
+In diesem Abschnitt sei stets $K^-$ der private Schlüssel und $K^+$ der
+öffentliche Schlüssel
+
+\begin{itemize}
+\item Asymmetrische Verschlüsselungs-Verfahren umgehen das Problem des
+  Schlüsselaustauschs von symmetrischen Verfahren, indem zum Ver- und
+  Entschlüsseln verschiedene Schlüssel benutzt werden
+\item Eine Entität hat hierbei stets zwei Schlüssel, von denen einer öffentlich
+  bekannt gemacht wird und der andere streng geheim ist
+\item Ein Sender verschlüsselt eine geheime Nachricht nun mit dem öffentlichen
+  Schlüssel des Empfängers und nur dieser kann die Nachricht mit seinem
+  geheimen Schlüssel wieder entschlüsseln
+\item Voraussetzungen, damit das Verfahren funktioniert sind
+  \begin{enumerate}
+  \item Man muss zwei Schlüssel finden, sodass für alle $m$ gilt
+    $K^-(K^+(m)) = m$
+  \item Aus einem gegebenen öffentlichen Schlüssel darf man nicht auf den
+    privaten Schlüssel schließen können
+  \end{enumerate}
+\item Diese Voraussetzungen erfüllt z.B. der \emph{RSA-Algorithmus}, der
+  den öffentlichen und privaten Schlüssel folgendermaßen findet
+  \begin{enumerate}
+  \item Wähle zwei große Primzahlen $p$ und $q$ (z.B. jeweils 1024 Bit lang)
+  \item Berechne $n = pq$ und $z = (p-1)(q-1)$
+  \item Wähle ein zu $z$ teilerfremdes $e$ mit $e < n$
+  \item Berechne (z.B. mit dem Euklidischen Algorithmus) ein $d$, sodass
+    $ed - 1$ exakt durch $z$ teilbar ist (also $ed \mod z = 1$)
+  \item Wähle als öffentlichen Schlüssel das Paar $K^+ = (n,e)$ und als
+    privaten Schlüssel das Paar $K^- = (n,d)$
+  \end{enumerate}
+\item Hat man $K^-$ und $K^+$ wie oben bestimmt, verschlüsselt man eine
+  binär kodierte Nachricht $m$ durch berechnen von $c = m^e \mod n$ und
+  entschlüsselt sie wieder durch $m = c^d \mod n = (m^e \mod n)^d \mod n$
+\item Ein Satz der Zahlentheorie sagt, dass für zwei Primzahlen $a$ und $b$ und
+  $k = ab$ gilt
+  \begin{align*}
+    x^y \mod k = x^{y \mod (a-1)(b-1)}
+  \end{align*}
+\item Unter Annahme der im Algorithmus definierten Eigenschaften der
+  verwendeten Zahlen und unter Verwendung des oben genannten Satzes aus der
+  Zahlentheorie folgt der Beweis des RSA-Verfahrens
+  \begin{align*}
+    (m^e \mod n)^d \mod n & = m^{ed} \mod n \\
+    & = m^{ed \mod (p-1)(q-1)} \mod n \\
+    & = m^1 \mod n = m
+  \end{align*}
+\item Eine weitere interessante und nützliche Eigenschaft des nach dem
+  RSA-Verfahren gefundenen Schlüsselpaars ist, dass stets gilt
+  $K^-(K^+(m)) = m = K^+(K^-(m))$, es ist also egal, ob man zunächst den
+  öffentlichen und danach den privaten Schlüssel anwendet oder umgekehrt
+\item Da es vergleichsweise rechenaufwändig ist, eine Nachricht mit dem
+  öffentlichen Schlüssel zu verschlüsseln, werden asymmetrische Verfahren
+  oft lediglich benutzt, um einen symmetrischen Schlüssel auf sicherem Wege
+  auszutauschen, mit dem dann die eigentlichen Nachrichten verschlüsselt
+  werden
+\end{itemize}
+
+\subsection{Authentifizierung}
+
+\begin{itemize}
+\item Um sich beim Gegenüber zu authentisieren, reicht es nicht aus, ein
+  geheimes Passwort zu senden, da hier ein \emph{Playback-Angriff} möglich
+  ist, indem ein Eindringling das Paket mit dem Passwort mitschneidet und
+  beim nächsten mal einsetzt, um sich als der gewünschte Gesprächspartner
+  auszugeben (hier hilft auch ein Verschlüsseln des Passwortes nicht)
+\item Eine sicherere Methode, sich zu authentisieren, ist, dem Gegenüber
+  eine \emph{nur ein einziges Mal} verwendete \emph{Nonce} zu senden, welche
+  dieser entweder mit einem gemeinsamen symmetrischen Schlüssel oder mit
+  seinem privaten Schlüssel verschlüsselt und zurückschickt
+\item Eine auch hierdurch nicht auszuschließende und sehr schwer zu erkennende
+  Angriffsmöglichkeit ist der \emph{Man-in-the-middle-Angriff}, bei dem sich
+  der Angreifer zwischen Sender und Empfänger schaltet und sich dem einen
+  gegenüber als der jeweils andere ausgibt
+\end{itemize}
+
+\subsection{Integrität von Nachrichten}
+
+\begin{itemize}
+\item Ziel ist es, eine Parallele zur handgeschriebenen Unterschrift zu
+  entwickeln, bei der sichergestellt ist, dass eine Nachricht auch wirklich
+  vom deklarierten Absender kommt und dass der Absender auch genau diese
+  Nachricht und keine andere gesendet hat
+\item Ein einfaches Verfahren das zu erreichen ist, dass der Absender die
+  Nachricht mit seinem privaten Schlüssel verschlüsselt
+\item So kann jeder andere, der im Besitz des öffentlichen Schlüssels ist
+  nachweisen, dass die Nachricht vom richtigen Absender stammt, da nur dieser
+  den entsprechenden privaten Schlüssel haben kann
+\item Ein Problem ist hierbei, dass es sehr rechenaufwändig ist, lange
+  Nachrichten mit dem privaten Schlüssel zu verschlüsseln
+\item Lösung des Problems ist die Berechnung eines \emph{Hashwertes} fester
+  Länge aus der Nachricht und Anhängen des verschlüsselten Hashwertes an die
+  Nachricht
+\item Die Hashfunktion muss dabei so gewählt sein, dass einerseits eine kleine
+  Veränderung an der Nachricht bereits einen komplett anderen Hashwert ergibt
+  und auf der anderen Seite keine zwei Nachrichten mit demselben Hashwert
+  existieren
+\item Verbreitete Hashfunktionen sind \emph{MD5} (128 Bit lange Hashwerte) und
+  \emph{SHA1} (160 Bit lange Hashwerte)
+\end{itemize}
+
+\subsection{Schlüsselverteilung}
+
+\begin{itemize}
+\item Bei Verwendung eines symmetrischen Schlüssels ergibt sich das Problem,
+  dass man zunächst einmal den symmetrischen Schlüssel austauschen muss, ohne
+  dass der Schlüssel dadurch jemand anderem in die Hände fällt
+\item Ein ähnliches Problem bei Verwendung eines Schlüsselpaars ist, dass
+  man nicht sicher sein kann, ob der erhaltene öffentliche Schlüssel auch
+  tatsächlich der ist, den man haben möchte, oder ob er von einem
+  »Man-in-the-middle« stammt
+\item Diesen Problemen begegnet man durch die Einführung von vertrauenswürdigen
+  Zwischenstationen von denen man Schlüssel beglaubigen lässt
+\item Im Fall der symmetrischen Schlüssel heißt eine solche Entität \emph{KDC
+  (»key distribution center«)}, welche einen symmetrischen Schlüssel für
+  jeden registrierten Nutzer verwaltet
+\item Möchten nun zwei Parteien $A$ und $B$ kommunizieren, so fordert $A$ beim
+  KDC einen symmetrischen Schlüssel $R$ an, der einmalig für diese Verbindung
+  verwendet wird und teilt dem KDC den Gesprächspartner $B$ mit
+\item Das KDC generiert $R$ und antwortet dem Initiator mit
+  $K_{A,KDC}(R,K_{B,KDC}(A,R))$
+\item Nur $A$ hat den korrekten Schlüssel, um diese Nachricht zu entschlüsseln,
+  und leitet den Teil $K_{B,KDC}(A,R)$ and $B$ weiter
+\item Wenn $B$ diese Nachricht erhält, kennen beide Parteien den für die
+  Verbindung bestimmten Schlüssel $R$ und außerdem sind sie gegenseitig
+  authentifiziert, da nur $B$ den Schlüssel hat, um $K_{B,KDC}(A,R)$ zu
+  entschlüsseln und nur $A$ den Schlüssel hatte, um $K_{A,KDC}(R,K_{B,KDC}(A,R))$
+  zu entschlüsseln und den entsprechenden Teil an $B$ weiterzusenden, immer
+  die Vertrauenswürdigkeit des KDC vorausgesetzt
+\item Die Lösung des oben genannten Problem für asymmetrische Schlüsselpaare
+  funktioniert ganz ähnlich, nur heißt hier die vertrauenswürdige Entität
+  \emph{CA (»certification authority«)}
+\item Jede Person lässt ihren öffentlichen Schlüssel von der CA
+  \emph{zertifizieren}
+\item Falls zwei Parteien nun miteinander kommunizieren möchten, lassen sie
+  sich das Zertifikat des jeweils anderen von der CA schicken und können
+  somit sicher sein, dass dass die jeweilige Partei die ist, die sie vorgibt
+  zu sein, natürlich auch wieder die Vertrauenswürdigkeit der CA vorausgesetzt
+\end{itemize}
+
+\subsection{Sicherheit in verschiedenen Protokollschichten}
+
+\begin{itemize}
+\item Der De-facto-Standard eine E-Mail sicher zu übertragen ist
+  \emph{PGP (»pretty good privacy«)}
+  \begin{itemize}
+  \item Dabei wird die eigentliche Nachricht mit einem symmetrischen Schlüssel
+    verschlüsselt, welcher wiederum mit dem öffentlichen Schlüssel des
+    Empfängers verschlüsselt an die Mail angehängt wird, und zum Sicherstellen
+    der Integrität der Mail ein verschlüsselter Hash-Wert mitgesendet
+  \end{itemize}
+\item Eine Technik, um TCP-Verbindungen abzusichern ist \emph{SSL (»secure
+    sockets layer«)}
+  \begin{itemize}
+  \item SSL wird vor allem eingesetzt, um Webserver zu authentisieren und
+    die Verbindung zwischen Webserver und Client mit einem symmetrischen
+    Schlüssel zu verschlüsseln, der dem Webserver mit dem von der CA
+    erhaltenen öffentlichen Schlüssel verschlüsselt übermittelt wird
+  \item Optional ist auch eine Authentifizierung des Clients möglich
+  \end{itemize}
+\item Auf IP-Ebene kann \emph{IPsec} benutzt werden, um Absender zu
+  authentifizieren und die gesendeten Daten zu verschlüsseln
+  \begin{itemize}
+  \item Es gibt zwei alternative Protokolle, um das zu erreichen, \emph{AH
+      (»authentication header«)} und \emph{ESP (»encapsulation security
+      payload«)}
+  \item Beide Protokolle bauen unidirektionale logische Verbindungen auf, die
+    \emph{SA (»security association«)} genannt werden und eindeutig durch
+    das Protokoll, die Absenderadresse und eine 32 Bit lange ID definiert werden
+  \item Das AH Protokoll fügt in jedes IP-Datagramm nach dem IP-Header einen
+    zusätzlichen AH-Header ein, der neben der SA-ID einen vom Absender
+    signierten Hashwert des originalen IP-Datagramms enthält, anhand dessen
+    die Authentizität der Nachricht überprüft werden kann, bietet jedoch
+    keine Vertraulichkeit (Verschlüsselung des Nachrichteninhalts)
+  \item Das ESP-Protokoll fügt nach dem IP-Header einen zusätzlichen
+    ESP-Header und am Schluss des Datagramms einen ESP-Trailer ein, gefolgt
+    von einem ESP-Authentifizierungs-Teil ähnlich dem AH-Header
+  \item Dabei wird das eigentliche Datagramm inklusive ESP-Trailer
+    verschlüsselt und das Datagramm inklusive ESP-Header und -Trailer
+    authentifiziert
+  \end{itemize}
+\item Ein erster (fehlgeschlagener) Ansatz 802.11 Netze sicher zu gestalten
+  und gegen Angriffe (»war-driving«) abzuschirmen, war \emph{WEP (»wired
+    equivalent privacy«)}
+  \begin{itemize}
+  \item Ein Host erhält dabei vom Zugangspunkt eine 128 Bit lange Nonce,
+    welche er mit dem bereits bekannten symmetrischen WEP-Schlüssel
+    verschlüsselt zurücksendet, woraufhin der Host beim Zugangspunkt als
+    authentifiziert gilt
+  \item Zusätzlich zum 40 Bit langen WEP-Schlüssel sendet der Host einen
+    24 Bit langen Initialisierungsvektor ($IV$) an den Zugangspunkt, welcher
+    diesen an den WEP-Schlüssel anhängt und so einen 64 Bit langen Schlüssel
+    $k$ erhält
+  \item Zum verschlüsseln des $i$-ten Bytes $d_i$ eines Frames wird $k_i^{IV}$
+    benutzt, $c_i = d_i \textnormal{ XOR } k_i^{IV}$ berechnet und $c_i$
+    zusammen mit dem unverschlüsselten $IV$ übertragen
+  \item Da der Initialisierungsvektor $IV$ nur 24 Bit lang ist, wird irgendwann
+    ein $IV$ wiederholt benutzt und da die $IV$s im Klartext übertragen
+    werden, kann ein Angreifer diese Wiederholung auch leicht bemerken
+  \item Ein Angreifer veranlasst nun den Zugangspunkt dazu, einen bekannten
+    Klartext $d_1d_2d_3 \dots$ zu verschlüsseln und kennt nun die
+    verschlüsselten Bytes $c_i = d_i \textnormal{ XOR } k_i^{IV}$, woraus sich
+    die Schlüsselsequenz $k_1^{IV}k_2^{IV}k_3^{IV}\dots$ berechnen lässt
+  \item Falls $IV$ nun das nächste mal wieder benutzt wird, kann der Angreifer
+    mitlesen
+  \end{itemize}
+\item Eine neue Technik, die zu sicheren Drahtlosnetzen führen soll, ist
+  802.11i
+  \begin{itemize}
+  \item Hierbei sind verschiedene Formen der Verschlüsselung möglich, es gibt
+    Mechanismen zum Schlüsselaustausch und es
+    wird ein Authentifizierungs-Server verschieden vom Zugangspunkt benutzt
+  \item Eine Rolle spielt hier das \emph{EAP (»extensible authentication
+      protocol«)}, welches jedoch nicht auf Drahtlosnetze beschränkt ist
+  \end{itemize}
+\end{itemize}
+
+\end{document}
