@@ -1,3 +1,20 @@
+/*
+ * © Copyright 2009, 2011–2012 by Edgar Kalkowski <eMail@edgar-kalkowski.de>
+ * 
+ * This file is part of the Matrix.
+ * 
+ * The Matrix is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License as published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
+ */
+
 package erki.matrix.java2d;
 
 import java.awt.Color;
@@ -52,8 +69,7 @@ public class Matrix extends JFrame implements Runnable {
     
     private boolean killed = false;
     
-    private int deletingStrings, creatingStrings, quotePause, quote2Pause,
-            randomNoise;
+    private int deletingStrings, creatingStrings, quotePause, quote2Pause, randomNoise;
     
     /**
      * Create a new matrix.
@@ -63,28 +79,26 @@ public class Matrix extends JFrame implements Runnable {
      * @param cStrings
      *        Count of creating strings created per second.
      * @param qPause
-     *        Maximal pause time in seconds between two quotes. The exact time
-     *        is computed as {@code Math.random() * qPause}.
+     *        Maximal pause time in seconds between two quotes. The exact time is computed as
+     *        {@code Math.random() * qPause}.
      * @param q2Pause
-     *        Maximal pause time in seconds between two hidden quotes. The exact
-     *        time is computes as {@code Math.random() * q2Pause}.
+     *        Maximal pause time in seconds between two hidden quotes. The exact time is computes as
+     *        {@code Math.random() * q2Pause}.
      * @param rNoise
-     *        Random noise generated in 0.02 seconds (roughly a frame of your
-     *        screen).
+     *        Random noise generated in 0.02 seconds (roughly a frame of your screen).
      * @param charFile
      *        File to use the chars from
      * @param quoteFile
-     *        File that contains the main quotes that are displayed centered on
-     *        the screen with a little border around them.
+     *        File that contains the main quotes that are displayed centered on the screen with a
+     *        little border around them.
      * @param quote2File
-     *        File that contains the hidden quotes that are displayed at random
-     *        position without border.
+     *        File that contains the hidden quotes that are displayed at random position without
+     *        border.
      * @param fontSize
      *        The size of the font that is used for the displayed matrix.
      */
-    public Matrix(int dStrings, int cStrings, int qPause, int q2Pause,
-            int rNoise, String charFile, String quoteFile, String quote2File,
-            final int fontSize) {
+    public Matrix(int dStrings, int cStrings, int qPause, int q2Pause, int rNoise, String charFile,
+            String quoteFile, String quote2File, final int fontSize) {
         deletingStrings = dStrings;
         creatingStrings = cStrings;
         quotePause = qPause;
@@ -127,10 +141,8 @@ public class Matrix extends JFrame implements Runnable {
                 if (matrix == null) {
                     int width = g2.getFontMetrics().charWidth('w');
                     int height = g2.getFontMetrics().getHeight();
-                    matrix = new String[Toolkit.getDefaultToolkit()
-                            .getScreenSize().width
-                            / width][Toolkit.getDefaultToolkit()
-                            .getScreenSize().height
+                    matrix = new String[Toolkit.getDefaultToolkit().getScreenSize().width / width][Toolkit
+                            .getDefaultToolkit().getScreenSize().height
                             / height];
                     colours = new int[matrix.length][matrix[0].length];
                     quote = new String[matrix.length][matrix[0].length];
@@ -161,11 +173,9 @@ public class Matrix extends JFrame implements Runnable {
                             g2.setColor(green);
                         }
                         
-                        g2.drawString("" + matrix[i][j], (float) (i * g2
-                                .getFontMetrics()
-                                .stringWidth("" + matrix[i][j])), (float) (g2
-                                .getFontMetrics().getAscent() + j
-                                * g2.getFontMetrics().getHeight()));
+                        g2.drawString("" + matrix[i][j], (float) (i * g2.getFontMetrics()
+                                .stringWidth("" + matrix[i][j])), (float) (g2.getFontMetrics()
+                                .getAscent() + j * g2.getFontMetrics().getHeight()));
                     }
                 }
             }
@@ -260,9 +270,8 @@ public class Matrix extends JFrame implements Runnable {
                 while (!killed) {
                     
                     try {
-                        Thread
-                                .sleep((int) (Math.random() * (1000 / creatingStrings))
-                                        + (1000 / creatingStrings));
+                        Thread.sleep((int) (Math.random() * (1000 / creatingStrings))
+                                + (1000 / creatingStrings));
                     } catch (InterruptedException e) {
                     }
                     
@@ -290,8 +299,8 @@ public class Matrix extends JFrame implements Runnable {
                                     } else if (!quote2[i][pos].equals("")) {
                                         matrix[i][pos] = quote2[i][pos];
                                     } else {
-                                        matrix[i][pos] = chars.get((int) (Math
-                                                .random() * chars.size()));
+                                        matrix[i][pos] = chars.get((int) (Math.random() * chars
+                                                .size()));
                                     }
                                     
                                     colours[i][pos] = 2;
@@ -301,8 +310,7 @@ public class Matrix extends JFrame implements Runnable {
                                     colours[i][pos - 1] = 1;
                                 }
                                 
-                                if (pos - len >= 0
-                                        && pos - len < matrix[i].length) {
+                                if (pos - len >= 0 && pos - len < matrix[i].length) {
                                     colours[i][pos - len] = 0;
                                 }
                                 
@@ -325,8 +333,7 @@ public class Matrix extends JFrame implements Runnable {
                 while (!killed) {
                     
                     try {
-                        Thread
-                                .sleep(((int) (Math.random() * (1000 / deletingStrings)) + (1000 / deletingStrings)));
+                        Thread.sleep(((int) (Math.random() * (1000 / deletingStrings)) + (1000 / deletingStrings)));
                     } catch (InterruptedException e) {
                     }
                     
@@ -373,8 +380,7 @@ public class Matrix extends JFrame implements Runnable {
                 while (!killed) {
                     
                     try {
-                        Thread
-                                .sleep((long) (Math.random() * quotePause * 1000));
+                        Thread.sleep((long) (Math.random() * quotePause * 1000));
                     } catch (InterruptedException e) {
                     }
                     
@@ -398,23 +404,19 @@ public class Matrix extends JFrame implements Runnable {
                 while (!killed) {
                     
                     try {
-                        Thread
-                                .sleep((long) (Math.random() * quote2Pause * 1000));
+                        Thread.sleep((long) (Math.random() * quote2Pause * 1000));
                     } catch (InterruptedException e) {
                     }
                     
-                    List<String> quote = quotes2
-                            .get((int) (Math.random() * quotes2.size()));
+                    List<String> quote = quotes2.get((int) (Math.random() * quotes2.size()));
                     
                     int i = (int) (Math.random() * matrix.length);
                     int j = (int) (Math.random() * matrix[i].length);
                     
-                    for (int k = j; k < matrix[i].length
-                            && k - j < quote.size(); k++) {
+                    for (int k = j; k < matrix[i].length && k - j < quote.size(); k++) {
                         String line = quote.get(k - j);
                         
-                        for (int l = i; l < matrix.length
-                                && l - i < line.length(); l++) {
+                        for (int l = i; l < matrix.length && l - i < line.length(); l++) {
                             
                             if (!line.substring(l - i, l - i + 1).equals(" ")) {
                                 quote2[l][k] = line.substring(l - i, l - i + 1);
@@ -427,12 +429,10 @@ public class Matrix extends JFrame implements Runnable {
                     } catch (InterruptedException e) {
                     }
                     
-                    for (int k = j; k < matrix[i].length
-                            && k - j < quote.size(); k++) {
+                    for (int k = j; k < matrix[i].length && k - j < quote.size(); k++) {
                         String line = quote.get(k - j);
                         
-                        for (int l = i; l < matrix.length
-                                && l - i < line.length(); l++) {
+                        for (int l = i; l < matrix.length && l - i < line.length(); l++) {
                             quote2[l][k] = "";
                         }
                     }
@@ -455,11 +455,10 @@ public class Matrix extends JFrame implements Runnable {
             }
         }
         
-        for (int i = matrix.length / 2 - (len + 4) / 2; i < matrix.length / 2
-                + (len + 4) / 2; i++) {
+        for (int i = matrix.length / 2 - (len + 4) / 2; i < matrix.length / 2 + (len + 4) / 2; i++) {
             
-            for (int j = matrix[i].length / 2 - (quote.size() + 2) / 2; j < matrix[i].length
-                    / 2 + (quote.size() + 3) / 2; j++) {
+            for (int j = matrix[i].length / 2 - (quote.size() + 2) / 2; j < matrix[i].length / 2
+                    + (quote.size() + 3) / 2; j++) {
                 Matrix.this.quote[i][j] = " ";
             }
         }
@@ -479,11 +478,10 @@ public class Matrix extends JFrame implements Runnable {
         } catch (InterruptedException e) {
         }
         
-        for (int i = matrix.length / 2 - (len + 4) / 2; i < matrix.length / 2
-                + (len + 4) / 2; i++) {
+        for (int i = matrix.length / 2 - (len + 4) / 2; i < matrix.length / 2 + (len + 4) / 2; i++) {
             
-            for (int j = matrix[i].length / 2 - (quote.size() + 2) / 2; j < matrix[i].length
-                    / 2 + (quote.size() + 3) / 2; j++) {
+            for (int j = matrix[i].length / 2 - (quote.size() + 2) / 2; j < matrix[i].length / 2
+                    + (quote.size() + 3) / 2; j++) {
                 Matrix.this.quote[i][j] = "";
             }
         }
@@ -508,10 +506,10 @@ public class Matrix extends JFrame implements Runnable {
         quotes2 = new LinkedList<List<String>>();
         
         try {
-            BufferedReader fileIn = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(file), "UTF-8"));
-            BufferedReader fileIn2 = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(file2), "UTF-8"));
+            BufferedReader fileIn = new BufferedReader(new InputStreamReader(new FileInputStream(
+                    file), "UTF-8"));
+            BufferedReader fileIn2 = new BufferedReader(new InputStreamReader(new FileInputStream(
+                    file2), "UTF-8"));
             String line;
             List<String> lines = null;
             
@@ -580,8 +578,8 @@ public class Matrix extends JFrame implements Runnable {
         TreeSet<String> set = new TreeSet<String>();
         
         try {
-            BufferedReader fileIn = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(file), "UTF-8"));
+            BufferedReader fileIn = new BufferedReader(new InputStreamReader(new FileInputStream(
+                    file), "UTF-8"));
             String c;
             
             while ((c = fileIn.readLine()) != null) {
@@ -640,8 +638,7 @@ public class Matrix extends JFrame implements Runnable {
                 + "quotes that are diplayed at");
         System.out.println("                       random positions with no "
                 + "border around them (defaults to");
-        System.out.println("                       quotes2.txt in the "
-                + "current directory).");
+        System.out.println("                       quotes2.txt in the " + "current directory).");
         System.out.println("--quote-pause NUMBER   Maximal pause in seconds "
                 + "between two quotes (defaults to");
         System.out.println("                       300). The exact pause is "
@@ -657,8 +654,7 @@ public class Matrix extends JFrame implements Runnable {
         System.out.println("· Press the Q key when no quote is visible and "
                 + "a quote will be shown.");
         System.out.println();
-        System.out.println("© 2008 by Edgar Kalkowski (bugs to "
-                + "eMail@edgar-kalkowski.de)");
+        System.out.println("© 2008 by Edgar Kalkowski (bugs to " + "eMail@edgar-kalkowski.de)");
     }
     
     public static void main(String[] arguments) {
@@ -668,8 +664,7 @@ public class Matrix extends JFrame implements Runnable {
         
         TreeMap<String, String> args = CommandLineParser.parse(arguments);
         
-        if (args.containsKey("--help") || args.containsKey("-h")
-                || args.containsKey("-help")) {
+        if (args.containsKey("--help") || args.containsKey("-h") || args.containsKey("-help")) {
             printHelp();
             return;
         }
@@ -680,8 +675,8 @@ public class Matrix extends JFrame implements Runnable {
             try {
                 creatingStrings = (int) (Double.parseDouble(cStrings));
             } catch (NumberFormatException e) {
-                System.err.println("ERROR: The number of creating strings ("
-                        + cStrings + ") must be numerical!");
+                System.err.println("ERROR: The number of creating strings (" + cStrings
+                        + ") must be numerical!");
                 errors = true;
             }
             
@@ -694,8 +689,8 @@ public class Matrix extends JFrame implements Runnable {
             try {
                 deletingStrings = (int) (Double.parseDouble(dStrings));
             } catch (NumberFormatException e) {
-                System.err.println("ERROR: The number of deleting strings ("
-                        + dStrings + ") must be numerical!");
+                System.err.println("ERROR: The number of deleting strings (" + dStrings
+                        + ") must be numerical!");
                 errors = true;
             }
             
@@ -721,8 +716,8 @@ public class Matrix extends JFrame implements Runnable {
             try {
                 randomNoise = (int) (Double.parseDouble(rNoise));
             } catch (NumberFormatException e) {
-                System.err.println("ERROR: The number of random noise "
-                        + "patterns (" + rNoise + ") must be numerical!");
+                System.err.println("ERROR: The number of random noise " + "patterns (" + rNoise
+                        + ") must be numerical!");
                 errors = true;
             }
             
@@ -735,8 +730,8 @@ public class Matrix extends JFrame implements Runnable {
             try {
                 quotePause = (int) (Double.parseDouble(qPause));
             } catch (NumberFormatException e) {
-                System.err.println("ERROR: The maximal pause between two "
-                        + "quotes (" + qPause + ") must be numerical!");
+                System.err.println("ERROR: The maximal pause between two " + "quotes (" + qPause
+                        + ") must be numerical!");
                 errors = true;
             }
             
@@ -749,8 +744,8 @@ public class Matrix extends JFrame implements Runnable {
             try {
                 quote2Pause = (int) (Double.parseDouble(q2Pause));
             } catch (NumberFormatException e) {
-                System.err.println("ERROR: The maximal pause between two "
-                        + "hidden quotes (" + q2Pause + ") must be numerical!");
+                System.err.println("ERROR: The maximal pause between two " + "hidden quotes ("
+                        + q2Pause + ") must be numerical!");
                 errors = true;
             }
             
@@ -775,8 +770,7 @@ public class Matrix extends JFrame implements Runnable {
         if (!args.keySet().isEmpty()) {
             
             for (String key : args.keySet()) {
-                System.err.println("WARNING: Unknown argument: " + key + " "
-                        + args.get(key));
+                System.err.println("WARNING: Unknown argument: " + key + " " + args.get(key));
             }
         }
         
@@ -787,9 +781,8 @@ public class Matrix extends JFrame implements Runnable {
             System.exit(-1);
         }
         
-        Matrix matrix = new Matrix(deletingStrings, creatingStrings,
-                quotePause, quote2Pause, randomNoise, charFile, quoteFile,
-                quote2File, fontSize);
+        Matrix matrix = new Matrix(deletingStrings, creatingStrings, quotePause, quote2Pause,
+                randomNoise, charFile, quoteFile, quote2File, fontSize);
         matrix.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         matrix.setDefaultCloseOperation(EXIT_ON_CLOSE);
         matrix.setUndecorated(true);
