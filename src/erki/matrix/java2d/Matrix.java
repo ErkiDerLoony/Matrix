@@ -38,7 +38,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.JFrame;
@@ -651,8 +650,8 @@ public class Matrix extends JFrame implements Runnable {
                 + "matrix (defaults to 6).");
         System.out.println();
         System.out.println("Hints:");
-        System.out.println("· Press the Q key when no quote is visible and "
-                + "a quote will be shown.");
+        System.out.println("· Press the S key when no quote is visible and "
+                + "a quote will be shown. Q quits the program");
         System.out.println();
         System.out.println("© 2008 by Edgar Kalkowski (bugs to " + "eMail@edgar-kalkowski.de)");
     }
@@ -662,15 +661,15 @@ public class Matrix extends JFrame implements Runnable {
         String charFile = "chars.txt", quoteFile = "quotes.txt", quote2File = "quotes2.txt";
         boolean errors = false;
         
-        TreeMap<String, String> args = CommandLineParser.parse(arguments);
+        CommandLineParser args = new CommandLineParser(arguments);
         
-        if (args.containsKey("--help") || args.containsKey("-h") || args.containsKey("-help")) {
+        if (args.contains("--help", "-h", "-help")) {
             printHelp();
             return;
         }
         
-        if (args.containsKey("--creating-strings")) {
-            String cStrings = args.get("--creating-strings");
+        if (args.contains("--creating-strings")) {
+            String cStrings = args.pop("--creating-strings");
             
             try {
                 creatingStrings = (int) (Double.parseDouble(cStrings));
@@ -679,12 +678,10 @@ public class Matrix extends JFrame implements Runnable {
                         + ") must be numerical!");
                 errors = true;
             }
-            
-            args.remove("--creating-strings");
         }
         
-        if (args.containsKey("--deleting-strings")) {
-            String dStrings = args.get("--deleting-strings");
+        if (args.contains("--deleting-strings")) {
+            String dStrings = args.pop("--deleting-strings");
             
             try {
                 deletingStrings = (int) (Double.parseDouble(dStrings));
@@ -693,12 +690,10 @@ public class Matrix extends JFrame implements Runnable {
                         + ") must be numerical!");
                 errors = true;
             }
-            
-            args.remove("--deleting-strings");
         }
         
-        if (args.containsKey("--font-size")) {
-            String fSize = args.get("--font-size");
+        if (args.contains("--font-size")) {
+            String fSize = args.pop("--font-size");
             
             try {
                 fontSize = (int) (Double.parseDouble(fSize));
@@ -706,12 +701,10 @@ public class Matrix extends JFrame implements Runnable {
                 System.err.println("ERROR: The font size must be a number!");
                 errors = true;
             }
-            
-            args.remove("--font-size");
         }
         
-        if (args.containsKey("--random-noise")) {
-            String rNoise = args.get("--random-noise");
+        if (args.contains("--random-noise")) {
+            String rNoise = args.pop("--random-noise");
             
             try {
                 randomNoise = (int) (Double.parseDouble(rNoise));
@@ -720,12 +713,10 @@ public class Matrix extends JFrame implements Runnable {
                         + ") must be numerical!");
                 errors = true;
             }
-            
-            args.remove("--random-noise");
         }
         
-        if (args.containsKey("--quote-pause")) {
-            String qPause = args.get("--quote-pause");
+        if (args.contains("--quote-pause")) {
+            String qPause = args.pop("--quote-pause");
             
             try {
                 quotePause = (int) (Double.parseDouble(qPause));
@@ -734,12 +725,10 @@ public class Matrix extends JFrame implements Runnable {
                         + ") must be numerical!");
                 errors = true;
             }
-            
-            args.remove("--quote-pause");
         }
         
-        if (args.containsKey("--quote2-pause")) {
-            String q2Pause = args.get("--quote2-pause");
+        if (args.contains("--quote2-pause")) {
+            String q2Pause = args.pop("--quote2-pause");
             
             try {
                 quote2Pause = (int) (Double.parseDouble(q2Pause));
@@ -748,29 +737,24 @@ public class Matrix extends JFrame implements Runnable {
                         + q2Pause + ") must be numerical!");
                 errors = true;
             }
-            
-            args.remove("--quote2-pause");
         }
         
-        if (args.containsKey("--quote-file")) {
-            quoteFile = args.get("--quote-file");
-            args.remove("--quote-file");
+        if (args.contains("--quote-file")) {
+            quoteFile = args.pop("--quote-file");
         }
         
-        if (args.containsKey("--quote2-file")) {
-            quote2File = args.get("--quote2-file");
-            args.remove("--quote2-file");
+        if (args.contains("--quote2-file")) {
+            quote2File = args.pop("--quote2-file");
         }
         
-        if (args.containsKey("--char-file")) {
-            charFile = args.get("--char-file");
-            args.remove("--char-file");
+        if (args.contains("--char-file")) {
+            charFile = args.pop("--char-file");
         }
         
         if (!args.keySet().isEmpty()) {
             
             for (String key : args.keySet()) {
-                System.err.println("WARNING: Unknown argument: " + key + " " + args.get(key));
+                System.err.println("WARNING: Unknown argument: " + key + " " + args.pop(key));
             }
         }
         
