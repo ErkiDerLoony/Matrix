@@ -29,6 +29,7 @@ int main(int argc, char** argv) {
 
   XWindowAttributes attributes;
   XGetWindowAttributes(display, window, &attributes);
+  Pixmap buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
 
   Atom deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
   XSetWMProtocols(display, window, &deleteMessage, 1);
@@ -61,10 +62,11 @@ int main(int argc, char** argv) {
     switch (event.type) {
     case ConfigureNotify:
       XGetWindowAttributes(display, window, &attributes);
+      XFreePixmap(display, buffer);
+      buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
       break;
     case MapNotify:
     case Expose:;
-      Pixmap buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
       XSetForeground(display, graphics, blackx.pixel);
       XFillRectangle(display, buffer, graphics, 0, 0, attributes.width, attributes.height);
       XSetForeground(display, graphics, darkGreens.pixel);
