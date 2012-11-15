@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -29,6 +30,9 @@ int main(int argc, char** argv) {
   XWindowAttributes attributes;
   XGetWindowAttributes(display, window, &attributes);
 
+  Atom deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
+  XSetWMProtocols(display, window, &deleteMessage, 1);
+
   XEvent event;
   int killed = 0;
   XColor darkGreenx, darkGreens, blackx, blacks;
@@ -36,10 +40,22 @@ int main(int argc, char** argv) {
                    "black", &blacks, &blackx);
   XAllocNamedColor(display, DefaultColormapOfScreen(DefaultScreenOfDisplay(display)),
                    "dark green", &darkGreens, &darkGreenx);
-  XSetForeground(display, DefaultGC(display, screen), darkGreens.pixel);
-  XSetBackground(display, DefaultGC(display, screen), blacks.pixel);
+
+  GC graphics = XCreateGC(display, window, 0, NULL);
+  XSetGraphicsExposures(display, graphics, 0);
+
+  char *text = malloc(512*sizeof(char));
+
+  if (text == NULL) {
+    perror("malloc");
+    exit(1);
+  }
+
+  int counter = 0;
 
   while (!killed) {
+    counter++;
+    sprintf(text, "Hallo Welt %d", counter);
     XNextEvent(display, &event);
 
     switch (event.type) {
@@ -47,9 +63,20 @@ int main(int argc, char** argv) {
       XGetWindowAttributes(display, window, &attributes);
       break;
     case MapNotify:
-    case Expose:
-      XFillRectangle(display, window, DefaultGC(display, screen), 10, 10, attributes.width - 20, attributes.height - 20);
-      XDrawString(display, window, DefaultGC(display, screen), 10, 50, "Hallo Welt", strlen("Hallo Welt"));
+    case Expose:;
+      Pixmap buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
+      XSetForeground(display, graphics, blackx.pixel);
+      XFillRectangle(display, buffer, graphics, 0, 0, attributes.width, attributes.height);
+      XSetForeground(display, graphics, darkGreens.pixel);
+      XDrawString(display, buffer, graphics, 10, 50, text, strlen(text));
+      XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
+      break;
+    case ClientMessage:
+
+      if (event.xclient.data.l[0] == deleteMessage) {
+        killed = 1;
+      }
+
       break;
     case KeyPress:
       killed = 1;
@@ -62,9 +89,12 @@ int main(int argc, char** argv) {
         exit(1);
       }
 
-      sprintf(message, "Unknown X event type: %d\n", event.type);
+      sprintf(message, "Unhandled X event type: %d\n", event.type);
       fprintf(stderr, message);
+      free(message);
     }
+
+    usleep(33);
   }
 
   XCloseDisplay(display);
