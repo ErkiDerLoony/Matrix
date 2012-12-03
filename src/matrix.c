@@ -5,6 +5,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#include <X11/Xft/Xft.h>
 
 int main(int argc, char** argv) {
   Display *display = XOpenDisplay(NULL);
@@ -36,6 +37,8 @@ int main(int argc, char** argv) {
   Atom deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
   XSetWMProtocols(display, window, &deleteMessage, 1);
 
+  XftFont *font = XftFontOpen(display, screen, XFT_FAMILY, "Terminus", NULL);
+
   XColor green;
   green.red = 0;
   green.green = 0xFFFF;
@@ -53,12 +56,7 @@ int main(int argc, char** argv) {
   GC graphics = XCreateGC(display, window, 0, NULL);
   XSetGraphicsExposures(display, graphics, 0);
 
-  char *text = malloc(512*sizeof(char));
-
-  if (text == NULL) {
-    perror("malloc");
-    exit(1);
-  }
+  char text[512];
 
   XEvent event;
   int counter = 0;
@@ -68,14 +66,7 @@ int main(int argc, char** argv) {
     counter++;
     sprintf(text, "Hallo Welt %d", counter);
 
-    XSetForeground(display, graphics, black.pixel);
-    XFillRectangle(display, buffer, graphics, 0, 0, attributes.width, attributes.height);
-    XSetForeground(display, graphics, green.pixel);
-    XDrawString(display, buffer, graphics, 10, 50, text, strlen(text));
-    XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
-    XSync(display, 0);
-
-    if (XEventsQueued(display, &event) > 0) {
+    if (XEventsQueued(display, QueuedAlready) > 0) {
       XNextEvent(display, &event);
 
       switch (event.type) {
@@ -86,6 +77,8 @@ int main(int argc, char** argv) {
         break;
       case MapNotify:
       case Expose:;
+        XSetForeground(display, graphics, black.pixel);
+        XFillRectangle(display, window, graphics, 0, 0, attributes.width, attributes.height);
         break;
       case ClientMessage:
 
@@ -116,10 +109,16 @@ int main(int argc, char** argv) {
       }
     }
 
-    usleep(1000);
+    XSetForeground(display, graphics, black.pixel);
+    XFillRectangle(display, buffer, graphics, 0, 0, attributes.width, attributes.height);
+    XSetForeground(display, graphics, green.pixel);
+    XDrawString(display, buffer, graphics, 10, 50, text, strlen(text));
+    XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
+    XSync(display, 0);
+
+    usleep(33000);
   }
 
-  free(text);
   XFreeColors(display, cmap, &black.pixel, 1, 0);
   XFreeColors(display, cmap, &green.pixel, 1, 0);
   XFreeGC(display, graphics);

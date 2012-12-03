@@ -1,6 +1,6 @@
 project(Matrix C)
 cmake_minimum_required(VERSION 2.6)
-add_definitions("-Wall -O2 -g -pedantic")
+add_definitions("-Wall -O2 -g")
 
 include_directories(src)
 add_subdirectory(src)
