@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -37,24 +38,38 @@ int main(int argc, char** argv) {
   Atom deleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
   XSetWMProtocols(display, window, &deleteMessage, 1);
 
-  XftFont *font = XftFontOpen(display, screen, XFT_FAMILY, "Terminus", NULL);
-
-  XColor green;
-  green.red = 0;
-  green.green = 0xFFFF;
-  green.blue = 0;
-
-  XColor black;
-  black.red = 0;
-  black.green = 0;
-  black.blue = 0;
-
   Colormap cmap = DefaultColormapOfScreen(DefaultScreenOfDisplay(display));
-  XAllocColor(display, cmap, &green);
-  XAllocColor(display, cmap, &black);
 
   GC graphics = XCreateGC(display, window, 0, NULL);
   XSetGraphicsExposures(display, graphics, 0);
+
+  Visual *visual = DefaultVisualOfScreen(DefaultScreenOfDisplay(display));
+  XftFont *font = XftFontOpen(display, screen, XFT_FAMILY, XftTypeString, "Terminus", NULL);
+
+  if (font == NULL) {
+    fprintf(stderr, "Error loading font!\n");
+    exit(1);
+  }
+
+  XftDraw *xft = XftDrawCreate(display, window, visual, cmap);
+
+  XRenderColor greenColour;
+  greenColour.red = 0;
+  greenColour.green = USHRT_MAX;
+  greenColour.blue = 0;
+  greenColour.alpha = USHRT_MAX;
+
+  XRenderColor blackColour;
+  blackColour.red = 0;
+  blackColour.green = 0;
+  blackColour.blue = 0;
+  blackColour.alpha = USHRT_MAX;
+
+  XftColor green;
+  XftColorAllocValue(display, visual, cmap, &greenColour, &green);
+
+  XftColor black;
+  XftColorAllocValue(display, visual, cmap, &blackColour, &black);
 
   char text[512];
 
@@ -74,11 +89,13 @@ int main(int argc, char** argv) {
         XGetWindowAttributes(display, window, &attributes);
         XFreePixmap(display, buffer);
         buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
+        XftDrawDestroy(xft);
+        xft = XftDrawCreate(display, buffer, visual, cmap);
         break;
       case MapNotify:
       case Expose:;
-        XSetForeground(display, graphics, black.pixel);
-        XFillRectangle(display, window, graphics, 0, 0, attributes.width, attributes.height);
+        XftDrawRect(xft, &black, 0, 0, attributes.width, attributes.height);
+        XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
         break;
       case ClientMessage:
 
@@ -109,18 +126,17 @@ int main(int argc, char** argv) {
       }
     }
 
-    XSetForeground(display, graphics, black.pixel);
-    XFillRectangle(display, buffer, graphics, 0, 0, attributes.width, attributes.height);
-    XSetForeground(display, graphics, green.pixel);
-    XDrawString(display, buffer, graphics, 10, 50, text, strlen(text));
+    XftDrawRect(xft, &black, 0, 0, attributes.width, attributes.height);
+    XftDrawString8(xft, &green, font, 10, 10, (unsigned char *) text, strlen(text));
     XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
     XSync(display, 0);
 
     usleep(33000);
   }
 
-  XFreeColors(display, cmap, &black.pixel, 1, 0);
-  XFreeColors(display, cmap, &green.pixel, 1, 0);
+  XftColorFree(display, visual, cmap, &green);
+  XftColorFree(display, visual, cmap, &black);
+  XftDrawDestroy(xft);
   XFreeGC(display, graphics);
   XCloseDisplay(display);
   return 0;
