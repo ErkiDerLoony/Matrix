@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
   XSetGraphicsExposures(display, graphics, 0);
 
   Visual *visual = DefaultVisualOfScreen(DefaultScreenOfDisplay(display));
-  XftFont *font = XftFontOpen(display, screen, XFT_FAMILY, XftTypeString, "Terminus", NULL);
+  XftFont *font = XftFontOpen(display, screen, XFT_FAMILY, XftTypeString, "Terminus", XFT_SIZE, XftTypeDouble, 15.0, NULL);
 
   if (font == NULL) {
     fprintf(stderr, "Error loading font!\n");
@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
   }
 
   XftDraw *xft = XftDrawCreate(display, window, visual, cmap);
+  XGlyphInfo extents;
 
   XRenderColor greenColour;
   greenColour.red = 0;
@@ -71,7 +72,9 @@ int main(int argc, char** argv) {
   XftColor black;
   XftColorAllocValue(display, visual, cmap, &blackColour, &black);
 
-  char text[512];
+  int width = 9;
+  int height = 9;
+  char *text = malloc(width*height*sizeof(char));
 
   XEvent event;
   int counter = 0;
@@ -79,16 +82,29 @@ int main(int argc, char** argv) {
 
   while (!killed) {
     counter++;
-    sprintf(text, "Hallo Welt %d", counter);
 
     if (XEventsQueued(display, QueuedAlready) > 0) {
       XNextEvent(display, &event);
 
       switch (event.type) {
       case ConfigureNotify:
+
+        // Store the new window size and update text buffer.
         XGetWindowAttributes(display, window, &attributes);
+        unsigned char c[1];
+        c[0] = 'W';
+        XftTextExtentsUtf8(display, font, c, 1, &extents);
+        //free(text);
+        //width = attributes.width/extents.width;
+        //height = attributes.height/extents.height;
+        //printf("attributes.width = %d, attributes.height = %d, extents.width = %d, extents.height = %d, width = %d, height = %d\n", attributes.width, attributes.height, extents.width, extents.height, width, height);
+        //text = malloc(width*height*sizeof(char));
+
+        // Create new buffer of appropriate size.
         XFreePixmap(display, buffer);
         buffer = XCreatePixmap(display, window, attributes.width, attributes.height, attributes.depth);
+
+        // Wrap the new buffer for xft.
         XftDrawDestroy(xft);
         xft = XftDrawCreate(display, buffer, visual, cmap);
         break;
@@ -126,8 +142,26 @@ int main(int argc, char** argv) {
       }
     }
 
+    // Update the matrix.
+    for (int x = 0; x < width; x++) {
+
+      for (int y = 0; y < height; y++) {
+        *(text + x*width + y) = 'X';
+      }
+    }
+
+    // Clear the screen.
     XftDrawRect(xft, &black, 0, 0, attributes.width, attributes.height);
-    XftDrawString8(xft, &green, font, 10, 10, (unsigned char *) text, strlen(text));
+
+    // Render the matrix.
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        XftDrawStringUtf8(xft, &green, font, x * extents.width, y * extents.height,
+                          (unsigned char*) (text + x*width + y), 1);
+      }
+    }
+
+    // Copy the double buffer.
     XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
     XSync(display, 0);
 
@@ -139,5 +173,6 @@ int main(int argc, char** argv) {
   XftDrawDestroy(xft);
   XFreeGC(display, graphics);
   XCloseDisplay(display);
+  free(text);
   return 0;
 }
