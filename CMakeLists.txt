@@ -1,6 +1,6 @@
 project(Matrix C)
 cmake_minimum_required(VERSION 2.6)
-add_definitions("-Wall -O2 -g --std=c99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -O2 -g --std=c99")
 
 include_directories(src)
 add_subdirectory(src)

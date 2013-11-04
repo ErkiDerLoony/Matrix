@@ -1,3 +1,5 @@
+#define _BSD_SOURCE
+
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -72,9 +74,9 @@ int main(int argc, char** argv) {
   XftColor black;
   XftColorAllocValue(display, visual, cmap, &blackColour, &black);
 
-  int width = 9;
-  int height = 9;
-  char *text = malloc(width*height*sizeof(char));
+  int width = 3;
+  int height = 3;
+  char *text = malloc(width*height);
 
   XEvent event;
   int counter = 0;
@@ -92,13 +94,12 @@ int main(int argc, char** argv) {
         // Store the new window size and update text buffer.
         XGetWindowAttributes(display, window, &attributes);
         unsigned char c[1];
-        c[0] = 'W';
+        c[0] = ' ';
         XftTextExtentsUtf8(display, font, c, 1, &extents);
-        //free(text);
-        //width = attributes.width/extents.width;
-        //height = attributes.height/extents.height;
-        //printf("attributes.width = %d, attributes.height = %d, extents.width = %d, extents.height = %d, width = %d, height = %d\n", attributes.width, attributes.height, extents.width, extents.height, width, height);
-        //text = malloc(width*height*sizeof(char));
+        free(text);
+        width = attributes.width/extents.width;
+        height = attributes.height/extents.height;
+        text = malloc(width*height);
 
         // Create new buffer of appropriate size.
         XFreePixmap(display, buffer);
@@ -146,7 +147,9 @@ int main(int argc, char** argv) {
     for (int x = 0; x < width; x++) {
 
       for (int y = 0; y < height; y++) {
-        *(text + x*width + y) = 'X';
+        char buffer[2];
+        sprintf(buffer, "%d", x % 10);
+        text[x*height + y] = buffer[0];
       }
     }
 
@@ -155,9 +158,10 @@ int main(int argc, char** argv) {
 
     // Render the matrix.
     for (int x = 0; x < width; x++) {
+
       for (int y = 0; y < height; y++) {
-        XftDrawStringUtf8(xft, &green, font, x * extents.width, y * extents.height,
-                          (unsigned char*) (text + x*width + y), 1);
+        XftDrawStringUtf8(xft, &green, font, x * extents.width, (y+1) * extents.height,
+                          (unsigned char*) (text + x*height + y), 1);
       }
     }
 
@@ -168,6 +172,7 @@ int main(int argc, char** argv) {
     usleep(33000);
   }
 
+  XftFontClose(display, font);
   XftColorFree(display, visual, cmap, &green);
   XftColorFree(display, visual, cmap, &black);
   XftDrawDestroy(xft);
