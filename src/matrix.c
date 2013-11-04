@@ -74,11 +74,11 @@ int main(int argc, char** argv) {
   XftColor black;
   XftColorAllocValue(display, visual, cmap, &blackColour, &black);
 
-  int width = 3;
-  int height = 3;
+  int width = 0;
+  int height = 0;
   int xoffset = 0;
   int yoffset = 0;
-  char *text = malloc(width*height);
+  char *text = 0;
 
   XEvent event;
   int counter = 0;
@@ -107,14 +107,26 @@ int main(int argc, char** argv) {
         char* old = text;
         text = malloc(width*height);
 
-        for (int x = 0; x < old_w && x < width; x++) {
+        if (old == 0) {
 
-          for (int y = 0; y < old_h && y < height; y++) {
-            text[x*height + y] = old[x*old_h + y];
+          for (int x = 0; x < width; x++) {
+
+            for (int y = 0; y < height; y++) {
+              text[x*height + y] = ' ';
+            }
           }
-        }
 
-        free(old);
+        } else {
+
+          for (int x = 0; x < old_w && x < width; x++) {
+
+            for (int y = 0; y < old_h && y < height; y++) {
+              text[x*height + y] = old[x*old_h + y];
+            }
+          }
+
+          free(old);
+        }
 
         // Create new buffer of appropriate size.
         XFreePixmap(display, buffer);
