@@ -76,6 +76,8 @@ int main(int argc, char** argv) {
 
   int width = 3;
   int height = 3;
+  int xoffset = 0;
+  int yoffset = 0;
   char *text = malloc(width*height);
 
   XEvent event;
@@ -99,6 +101,8 @@ int main(int argc, char** argv) {
         free(text);
         width = attributes.width/extents.width;
         height = attributes.height/extents.height;
+        xoffset = attributes.width - width*extents.width;
+        yoffset = attributes.height - height*extents.height;
         text = malloc(width*height);
 
         // Create new buffer of appropriate size.
@@ -161,7 +165,9 @@ int main(int argc, char** argv) {
     for (int x = 0; x < width; x++) {
 
       for (int y = 0; y < height; y++) {
-        XftDrawStringUtf8(xft, &green, font, x * extents.width, (y+1) * extents.height,
+        XftDrawStringUtf8(xft, &green, font,
+                          x * extents.width + xoffset/2,
+                          (y+1) * extents.height - font->descent + yoffset/2,
                           (unsigned char*) (text + x*height + y), 1);
       }
     }
