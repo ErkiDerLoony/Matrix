@@ -111,8 +111,9 @@ int main(int argc, char** argv) {
         break;
       case MapNotify:
       case Expose:;
-        XftDrawRect(xft, &black, 0, 0, attributes.width, attributes.height);
-        XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
+        // Screen is cleared anyway below, thus this is not necessary! (?)
+        //XftDrawRect(xft, &black, 0, 0, attributes.width, attributes.height);
+        //XCopyArea(display, buffer, window, graphics, 0, 0, attributes.width, attributes.height, 0, 0);
         break;
       case ClientMessage:
 
