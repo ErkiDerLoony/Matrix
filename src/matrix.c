@@ -175,10 +175,14 @@ int main(int argc, char** argv) {
     for (int x = 0; x < width; x++) {
 
       for (int y = 0; y < height; y++) {
-        int rnd = (int) (10.0 * rand() / RAND_MAX);
+        int rnd = (int) (50.0 * rand() / RAND_MAX);
 
         if (rnd == 0) {
           text[x*height + y] = 'a';
+        } else if (rnd == 1) {
+          text[x*height + y] = 'b';
+        } else {
+          text[x*height + y] = ' ';
         }
       }
     }
