@@ -98,12 +98,23 @@ int main(int argc, char** argv) {
         unsigned char c[1];
         c[0] = ' ';
         XftTextExtentsUtf8(display, font, c, 1, &extents);
-        free(text);
+        int old_w = width;
+        int old_h = height;
         width = attributes.width/extents.width;
         height = attributes.height/extents.height;
         xoffset = attributes.width - width*extents.width;
         yoffset = attributes.height - height*extents.height;
+        char* old = text;
         text = malloc(width*height);
+
+        for (int x = 0; x < old_w && x < width; x++) {
+
+          for (int y = 0; y < old_h && y < height; y++) {
+            text[x*height + y] = old[x*old_h + y];
+          }
+        }
+
+        free(old);
 
         // Create new buffer of appropriate size.
         XFreePixmap(display, buffer);
@@ -152,9 +163,11 @@ int main(int argc, char** argv) {
     for (int x = 0; x < width; x++) {
 
       for (int y = 0; y < height; y++) {
-        char buffer[2];
-        sprintf(buffer, "%d", x % 10);
-        text[x*height + y] = buffer[0];
+        int rnd = (int) (10.0 * rand() / RAND_MAX);
+
+        if (rnd == 0) {
+          text[x*height + y] = 'a';
+        }
       }
     }
 
